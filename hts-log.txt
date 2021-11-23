@@ -1,0 +1,82 @@
+HTTrack3.49-2+htsswf+htsjava launched on Tue, 23 Nov 2021 08:40:06 at https://cosmos-themes.online/themes/watson/#home +*.png +*.gif +*.jpg +*.jpeg +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar
+(winhttrack -qwC2%Ps2u1%s%uN0%I0p3DaK0H0%kf2A25000%f#f -F "Mozilla/4.5 (compatible; HTTrack 3.0x; Windows 98)" -%F "<!-- Mirrored from %s%s by HTTrack Website Copier/3.x [XR&CO'2014], %s -->" -%l "en, *" https://cosmos-themes.online/themes/watson/#home -O1 "D:\6 CVs\temp\mud" +*.png +*.gif +*.jpg +*.jpeg +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar )
+
+Information, Warnings and Errors reported for this mirror:
+note:	the hts-log.txt file, and hts-cache folder, may contain sensitive information,
+	such as username/password authentication for websites mirrored in this project
+	do not share these files/folders if you want these information to remain private
+
+08:41:25	Error: 	"Unable to get server's address: unknown error" (-5) after 2 retries at link primary/robots.txt (from primary/primary)
+08:41:25	Warning: 	Retry after error -5 (Unable to get server's address: No such host is known. ) at link primary/home (from primary/primary)
+08:42:54	Warning: 	Retry after error -5 (Unable to get server's address: unknown error) at link primary/home (from primary/primary)
+08:43:01	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/wp-content/themes/watson/css/owl.video.play.png (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/css/autoptimize_d5b3a6fc8c98c7e52d9e1230f2e36634.css)
+08:43:01	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=142
+08:43:01	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=142 to https://cosmos-themes.online/themes/watson/portfolio/book-design/
+08:43:11	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=202
+08:43:11	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=202 to https://cosmos-themes.online/themes/watson/portfolio/notepad-mockup/
+08:43:12	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=196
+08:43:12	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=196 to https://cosmos-themes.online/themes/watson/portfolio/door-hangar/
+08:43:12	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=189
+08:43:12	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=189 to https://cosmos-themes.online/themes/watson/portfolio/back-pack/
+08:43:14	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=229
+08:43:14	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=229 to https://cosmos-themes.online/themes/watson/portfolio/creative-box/
+08:43:16	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=122
+08:43:16	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=122 to https://cosmos-themes.online/themes/watson/best-way-to-design/
+08:43:51	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=120
+08:43:51	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=120 to https://cosmos-themes.online/themes/watson/things-i-need-to-get-started/
+08:43:54	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=118
+08:43:54	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=118 to https://cosmos-themes.online/themes/watson/my-current-workspace/
+08:43:55	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=116
+08:43:56	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=116 to https://cosmos-themes.online/themes/watson/best-place-to-travel-this-summer/
+08:43:59	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=114
+08:43:59	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=114 to https://cosmos-themes.online/themes/watson/latest-ui-trends-to-inspired-from/
+08:44:00	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=112
+08:44:00	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=112 to https://cosmos-themes.online/themes/watson/latest-tech-2021/
+08:44:01	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=110
+08:44:01	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=110 to https://cosmos-themes.online/themes/watson/best-easy-to-cook/
+08:44:01	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=108
+08:44:01	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=108 to https://cosmos-themes.online/themes/watson/best-sound-editing-software/
+08:44:01	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=97
+08:44:01	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=97 to https://cosmos-themes.online/themes/watson/top-beaches-in-the-world/
+08:44:01	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/popper.js (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0b16f39debeedcfcc92a159caf4a7a93.js)
+08:44:01	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/GET (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0b16f39debeedcfcc92a159caf4a7a93.js)
+08:44:01	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/Error pJS - No image.src (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0b16f39debeedcfcc92a159caf4a7a93.js)
+08:44:01	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/Edge/ (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0b16f39debeedcfcc92a159caf4a7a93.js)
+08:44:01	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/Gecko/ (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0b16f39debeedcfcc92a159caf4a7a93.js)
+08:44:01	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/Firefox/ (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0b16f39debeedcfcc92a159caf4a7a93.js)
+08:44:01	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/Version/ (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0b16f39debeedcfcc92a159caf4a7a93.js)
+08:44:01	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/version/ (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0b16f39debeedcfcc92a159caf4a7a93.js)
+08:44:01	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/-negative.svg (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0b16f39debeedcfcc92a159caf4a7a93.js)
+08:44:01	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/OPR/ (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0b16f39debeedcfcc92a159caf4a7a93.js)
+08:44:01	Error: 	"Unable to get server's address: unknown error" (-5) after 2 retries at link primary/home (from primary/primary)
+08:44:01	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=170
+08:44:01	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=170 to https://cosmos-themes.online/themes/watson/portfolio/notepad-design/
+08:44:04	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/portfolio/book-design/popper.js (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0aa23ab9ae7be85ea336fc69b89c56c9.js)
+08:44:04	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/portfolio/book-design/GET (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0aa23ab9ae7be85ea336fc69b89c56c9.js)
+08:44:04	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/portfolio/book-design/Error pJS - No image.src (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0aa23ab9ae7be85ea336fc69b89c56c9.js)
+08:44:04	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/portfolio/book-design/Edge/ (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0aa23ab9ae7be85ea336fc69b89c56c9.js)
+08:44:04	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/portfolio/book-design/Gecko/ (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0aa23ab9ae7be85ea336fc69b89c56c9.js)
+08:44:04	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/portfolio/book-design/Firefox/ (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0aa23ab9ae7be85ea336fc69b89c56c9.js)
+08:44:04	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/portfolio/book-design/Version/ (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0aa23ab9ae7be85ea336fc69b89c56c9.js)
+08:44:04	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/portfolio/book-design/version/ (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0aa23ab9ae7be85ea336fc69b89c56c9.js)
+08:44:04	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/portfolio/book-design/-negative.svg (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0aa23ab9ae7be85ea336fc69b89c56c9.js)
+08:44:04	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/portfolio/book-design/OPR/ (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_0aa23ab9ae7be85ea336fc69b89c56c9.js)
+08:44:04	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=208
+08:44:04	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=208 to https://cosmos-themes.online/themes/watson/portfolio/creative-flyer/
+08:44:06	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=182
+08:44:06	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=182 to https://cosmos-themes.online/themes/watson/portfolio/business-card/
+08:44:06	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=222
+08:44:06	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=222 to https://cosmos-themes.online/themes/watson/portfolio/cup-design/
+08:44:19	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/best-way-to-design/popper.js (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_61962f43b02c29872a14607372d50c08.js)
+08:44:19	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/best-way-to-design/GET (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_61962f43b02c29872a14607372d50c08.js)
+08:44:19	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/best-way-to-design/Error pJS - No image.src (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_61962f43b02c29872a14607372d50c08.js)
+08:44:19	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=176
+08:44:19	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=176 to https://cosmos-themes.online/themes/watson/portfolio/creative-cup/
+08:44:19	Warning: 	Moved Permanently for https://cosmos-themes.online/themes/watson/?p=215
+08:44:19	Warning: 	File has moved from https://cosmos-themes.online/themes/watson/?p=215 to https://cosmos-themes.online/themes/watson/portfolio/mobile-app/
+08:44:19	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/category/design/popper.js (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_461b4ae6a1a0542b5fd32d49fd80c859.js)
+08:44:19	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/category/design/GET (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_461b4ae6a1a0542b5fd32d49fd80c859.js)
+08:44:19	Error: 	"Not Found" (404) at link https://cosmos-themes.online/themes/watson/category/design/Error pJS - No image.src (from https://cosmos-themes.online/themes/watson/wp-content/cache/autoptimize/js/autoptimize_461b4ae6a1a0542b5fd32d49fd80c859.js)
+
+HTTrack Website Copier/3.49-2 mirror complete in 4 minutes 13 seconds : 289 links scanned, 237 files written (11123476 bytes overall) [7004271 bytes received at 27684 bytes/sec], 6541409 bytes transferred using HTTP compression in 215 files, ratio 27%, 26.6 requests per connection
+(29 errors, 42 warnings, 0 messages)

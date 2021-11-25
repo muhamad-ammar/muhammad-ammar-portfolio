@@ -299,468 +299,607 @@
                   <div class="categories">
                     <a class="category-name" href="../category/design/index.html">Backend</a>
                   </div>
-                  <h1 class="post-title">GraphQL: understanding node interface.</h1>
-                  <span class="post-date">Apr 16, 2020</span>
+                  <h1 class="post-title">Step by step guide to Laravel package development</h1>
+                  <span class="post-date"> Sep 19, 2020</span>
                 </div>
                 <div class="post-content col-md-10 offset-md-1">
-					<h2>
-						<a name="overview" href="#overview" class="anchor">
-						</a>
-						Overview
-					  </h2>
-					  
-					  <p>To provide options for GraphQL clients to elegantly handle for caching and data refetching GraphQL servers need to expose object identifiers in a standardized way. In the query, the schema should provide a standard mechanism for asking for an object by ID. We refer to objects with identifiers as <em>nodes</em>.</p>
-					  
-					  <h2>
-						<a name="reserved-types" href="#reserved-types" class="anchor">
-						</a>
-						Reserved Types
-					  </h2>
-					  
-					  <p>To a GraphQL Server to be compatible, it must reserve certain types and type names to support the consistent object identification model. We should create the following types:</p>
-					  
-					  <ul>
-					  <li>An interface named <em>Node</em>
-					  </li>
-					  <li>The <em>node field</em> on the root query type</li>
-					  </ul>
-					  
-					  <h2>
-						<a name="node-interface" href="#node-interface" class="anchor">
-						</a>
-						Node Interface
-					  </h2>
-					  
-					  <p>The server must provide an interface called <em>Node</em>. That interface must include exactly one field, called <em>id</em> that returns a non-null <em>ID</em>. This <em>id</em> should be a globally unique identifier for the object, and with just this <em>id</em>, the server should be able to refetch the object.</p>
-					  
-					  <p>NOTE: If two objects appear in the query, both implementing the <em>Node</em> with identical <em>ids</em>, then the two objects must be equal.</p>
-					  
-					  <h2>
-						<a name="node-root-field" href="#node-root-field" class="anchor">
-						</a>
-						Node root field
-					  </h2>
-					  
-					  <p>The server must provide a root field named <em>node</em> that returns the <em>Node</em>  interface. This root field must take exactly one non-null <em>ID</em> argument called <em>id</em>.</p>
-					  
-					  <p>When the value returned by the server in the <em>Node</em>'s <em>id</em> field is passed as the <em>id</em> parameter to the <em>node</em> root field than this query should refetch the identical object that implements <em>Node</em>.</p>
-					  
-					  <p>Now that we have some insight we must answer the following questions:</p>
-					  
-					  <ul>
-					  <li>How and when does Node ID gets created?</li>
-					  <li>When Node ID is used?</li>
-					  <li>How are the nodeDefinitions methods used?</li>
-					  </ul>
-					  
-					  <p>These questions were asked in this post <a href="https://medium.com/code-oil/relay-graphql-de-mystifying-node-id-38757121b9c">Relay/GraphQL: De-mystifying Node Interface/ID</a>. The present post also answers theses questions besides showing more examples, a generic and scalable form of registering types, how to test your <em>nodeField</em> and a generalization of the <em>Node Interface</em> pattern.</p>
-					  
-					  <h2>
-						<a name="how-and-when-the-node-ids-gets-created" href="#how-and-when-the-node-ids-gets-created" class="anchor">
-						</a>
-						How and when the Node IDs gets created?
-					  </h2>
-					  
-					  <p>A <em>Node ID</em> is created for each GraphQL object declaring <em>GraphQLObjectType</em> for that object. The function <em>globalIdField</em> has the role of auto-generate the node ID when the GraphQL object is created.<br>
-					  </p>
-					  
-					  <div class="highlight"><pre class="highlight typescript"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">globalIdField</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">graphql-relay</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">IUser</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./UserModel</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">load</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./UserLoader</span><span class="dl">'</span><span class="p">;</span>
-					  
-					  <span class="kd">const</span> <span class="nx">UserType</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GraphQLObjectType</span><span class="o">&lt;</span><span class="nx">IUser</span><span class="p">,</span> <span class="nx">GraphQLContext</span><span class="o">&gt;</span><span class="p">({</span>
-						<span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">User</span><span class="dl">'</span><span class="p">,</span>
-						<span class="na">description</span><span class="p">:</span> <span class="dl">'</span><span class="s1">User data</span><span class="dl">'</span><span class="p">,</span>
-						<span class="na">fields</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">({</span>
-						  <span class="c1">//  auto-generate node ID when the GraphQL object is created</span>
-						  <span class="na">id</span><span class="p">:</span> <span class="nx">globalIdField</span><span class="p">(</span><span class="dl">'</span><span class="s1">User</span><span class="dl">'</span><span class="p">),</span>
-						  <span class="p">...</span>
-						<span class="p">}),</span>
-						<span class="p">...</span>
-					  <span class="p">});</span>
-					  
-					  <span class="k">export</span> <span class="kd">const</span> <span class="nx">UserConnection</span> <span class="o">=</span> <span class="nx">connectionDefinitions</span><span class="p">({</span>
-						<span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">User</span><span class="dl">'</span><span class="p">,</span>
-						<span class="na">nodeType</span><span class="p">:</span> <span class="nx">GraphQLNonNull</span><span class="p">(</span><span class="nx">UserType</span><span class="p">),</span>
-					  <span class="p">});</span>
-					  
-					  <span class="k">export</span> <span class="k">default</span> <span class="nx">registerTypeLoader</span><span class="p">(</span><span class="nx">UserType</span><span class="p">,</span> <span class="nx">load</span><span class="p">);</span>
-					  
-					  </code></pre></div>
-					  
-					  
-					  
-					  <p>Further, we will talk about <em>registerTypeLoader</em>.</p>
-					  
-					  <h2>
-						<a name="when-the-node-id-is-used" href="#when-the-node-id-is-used" class="anchor">
-						</a>
-						When the Node ID is used?
-					  </h2>
-					  
-					  <p>Well, we already know that <em>Node ID</em> is used for refetch. But when exactly does a refetch occurs?<br>
-					  The First GraphQL request to fetch data is not a refetch and <em>Node IDs</em> have not been generated so far. The refetch occurs when on the client-side we already have GraphQL objects with <em>Node IDs</em> and, for instance: </p>
-					  
-					  <ul>
-					  <li>we request more data for an existing GraphQL object, which can arise from another component relying on the same GraphQL object but requiring different pieces of data of that object</li>
-					  <li>when the server-side object data has been changed </li>
-					  <li>when to change the parameters used to fetch the original GraphQL object.</li>
-					  </ul>
-					  <h2>
-						<a name="how-are-nodedefinitions-methods-used" href="#how-are-nodedefinitions-methods-used" class="anchor">
-						</a>
-						How are nodeDefinitions methods used?
-					  </h2>
-					  
-					  <p>For GraphQL types that you want to refetch you request to auto-generate a <em>Node ID</em> for the object during creation, as seen above, and you also need to tell GraphQL how to map globally the <em>Node ID</em> provided during refetch into actual data objects and their GraphQL types. You do this defining the <em>interfaces</em> field on <em>GraphQLObjectType</em>.<br>
-					  </p>
-					  
-					  <div class="highlight"><pre class="highlight typescript"><code><span class="c1">// UserType.ts</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">globalIdField</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">graphql-relay</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">IUser</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./UserModel</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">load</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./UserLoader</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">nodeInterface</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../../interface/NodeDefinitions</span><span class="dl">'</span><span class="p">;</span>
-					  
-					  <span class="kd">const</span> <span class="nx">UserType</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GraphQLObjectType</span><span class="o">&lt;</span><span class="nx">IUser</span><span class="p">,</span> <span class="nx">GraphQLContext</span><span class="o">&gt;</span><span class="p">({</span>
-						<span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">User</span><span class="dl">'</span><span class="p">,</span>
-						<span class="na">description</span><span class="p">:</span> <span class="dl">'</span><span class="s1">User data</span><span class="dl">'</span><span class="p">,</span>
-						<span class="na">fields</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">({</span>
-						  <span class="na">id</span><span class="p">:</span> <span class="nx">globalIdField</span><span class="p">(</span><span class="dl">'</span><span class="s1">User</span><span class="dl">'</span><span class="p">),</span>
-						  <span class="p">...</span>
-						<span class="p">}),</span>
-						<span class="c1">// use nodeInterface for re-fetching this GraphQL type by node ID</span>
-						<span class="na">interfaces</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="nx">nodeInterface</span><span class="p">],</span>
-					  <span class="p">});</span>
-					  
-					  <span class="k">export</span> <span class="kd">const</span> <span class="nx">UserConnection</span> <span class="o">=</span> <span class="nx">connectionDefinitions</span><span class="p">({</span>
-						<span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">User</span><span class="dl">'</span><span class="p">,</span>
-						<span class="na">nodeType</span><span class="p">:</span> <span class="nx">GraphQLNonNull</span><span class="p">(</span><span class="nx">UserType</span><span class="p">),</span>
-					  <span class="p">});</span>
-					  
-					  <span class="k">export</span> <span class="k">default</span> <span class="nx">registerTypeLoader</span><span class="p">(</span><span class="nx">UserType</span><span class="p">,</span> <span class="nx">load</span><span class="p">);</span>
-					  </code></pre></div>
-					  
-					  
-					  
-					  <p>The <em>nodeDefinitions</em> has this format and export <em>nodeField</em>, <em>nodeFields</em> and <em>nodeInterface</em>.<br>
-					  </p>
-					  
-					  <div class="highlight"><pre class="highlight typescript"><code><span class="c1">// nodeDefinitions.ts</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">nodeDefinitions</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">graphql-relay</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">idFetcher</span><span class="p">,</span> <span class="nx">typeResolver</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./nodeRegistry</span><span class="dl">'</span><span class="p">;</span>
-					  
-					  <span class="k">export</span> <span class="kd">const</span> <span class="p">{</span> <span class="nx">nodeField</span><span class="p">,</span> <span class="nx">nodesField</span><span class="p">,</span> <span class="nx">nodeInterface</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">nodeDefinitions</span><span class="p">(</span>
-						<span class="nx">idFetcher</span><span class="p">,</span>
-						<span class="nx">typeResolver</span><span class="p">,</span>
-					  <span class="p">);</span>
-					  </code></pre></div>
-					  
-					  
-					  
-					  <p>Be aware that <em>nodeDefinitions</em> to tell GraphQL how performs the mapping the <em>Node ID</em> and has two methods:</p>
-					  
-					  <ul>
-					  <li>the first receive the <em>globalId</em>, we map the <em>globalId</em> into its corresponding data object and with it can actually be able to read the GraphQL type and id of the object using <em>fromGlobalId</em> function. We will call it the <em>idFetcher</em>.</li>
-					  <li>the second receive the result object and Relay uses that to map an object to its GraphQL data type. So if the object is an instance of User, it will return UserType and so on. We will call it the <em>typeResolver</em>.</li>
-					  </ul>
-					  
-					  <p>See below how to implement the methods explained above:<br>
-					  </p>
-					  
-					  <div class="highlight"><pre class="highlight typescript"><code><span class="c1">// nodeRegistry.ts - that not scale well</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">fromGlobalId</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">graphql-relay</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="nx">User</span><span class="p">,</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">UserLoader</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../modules/user/UserLoader</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="nx">UserType</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../modules/user/UserType</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="c1">// many imports...</span>
-					  
-					  <span class="k">export</span> <span class="kd">const</span> <span class="nx">idFetcher</span> <span class="o">=</span> <span class="k">async</span> <span class="p">(</span><span class="nx">globalId</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">context</span><span class="p">:</span> <span class="nx">GraphQLContext</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-						<span class="kd">const</span> <span class="p">{</span> <span class="nx">id</span><span class="p">,</span> <span class="kd">type</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">fromGlobalId</span><span class="p">(</span><span class="nx">globalId</span><span class="p">);</span>
-					  
-						  <span class="k">if</span> <span class="p">(</span><span class="kd">type</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">User</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
-							<span class="k">return</span> <span class="nx">UserLoader</span><span class="p">.</span><span class="nx">load</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
-						  <span class="p">}</span>
-						  <span class="c1">// many ifs...</span>
-						  <span class="c1">// all the loads of your project</span>
-						  <span class="p">...</span>
-					  
-						  <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
-					  <span class="p">};</span>
-					  
-					  <span class="k">export</span> <span class="kd">const</span> <span class="nx">typeResolver</span> <span class="o">=</span> <span class="nx">object</span> <span class="o">=&gt;</span> <span class="p">{</span>
-						  <span class="k">if</span> <span class="p">(</span><span class="nx">obj</span> <span class="k">instanceof</span> <span class="nx">User</span><span class="p">)</span> <span class="p">{</span>
-							<span class="k">return</span> <span class="nx">UserType</span><span class="p">;</span>
-						  <span class="p">}</span>
-						  <span class="c1">// many ifs...</span>
-						  <span class="c1">// all the types of your project</span>
-						  <span class="p">...</span>
-					  
-						  <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
-					  <span class="p">}</span>
-					  </code></pre></div>
-					  
-					  
-					  
-					  <p>Realize that this implementation can be improved.</p>
-					  
-					  <p>After that, expose the <em>node</em> and your other queries on <em>QueryType</em>:<br>
-					  </p>
-					  
-					  <div class="highlight"><pre class="highlight typescript"><code><span class="c1">// QueryType.ts</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">GraphQLID</span><span class="p">,</span> <span class="nx">GraphQLString</span><span class="p">,</span> <span class="nx">GraphQLNonNull</span><span class="p">,</span> <span class="nx">GraphQLObjectType</span><span class="p">,</span> <span class="nx">GraphQLInputObjectType</span><span class="p">,</span> <span class="nx">GraphQLInterfaceType</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">graphql</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">connectionArgs</span><span class="p">,</span> <span class="nx">fromGlobalId</span><span class="p">,</span> <span class="nx">globalIdField</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">graphql-relay</span><span class="dl">'</span><span class="p">;</span>
-					  
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">nodeField</span><span class="p">,</span> <span class="nx">nodesField</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../interface/NodeDefinitions</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">GraphQLContext</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../types</span><span class="dl">'</span><span class="p">;</span>
-					  
-					  <span class="k">import</span> <span class="nx">UserType</span><span class="p">,</span> <span class="p">{</span> <span class="nx">UserConnection</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../modules/user/UserType</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">UserLoader</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../loader</span><span class="dl">'</span><span class="p">;</span>
-					  
-					  <span class="k">export</span> <span class="k">default</span> <span class="k">new</span> <span class="nx">GraphQLObjectType</span><span class="o">&lt;</span><span class="kr">any</span><span class="p">,</span> <span class="nx">GraphQLContext</span><span class="o">&gt;</span><span class="p">({</span>
-						<span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Query</span><span class="dl">'</span><span class="p">,</span>
-						<span class="na">description</span><span class="p">:</span> <span class="dl">'</span><span class="s1">The root of all... queries</span><span class="dl">'</span><span class="p">,</span>
-						<span class="na">fields</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">({</span>
-						  <span class="na">id</span><span class="p">:</span> <span class="nx">globalIdField</span><span class="p">(</span><span class="dl">'</span><span class="s1">Query</span><span class="dl">'</span><span class="p">),</span>
-						  <span class="na">node</span><span class="p">:</span> <span class="nx">nodeField</span><span class="p">,</span>
-						  <span class="na">nodes</span><span class="p">:</span> <span class="nx">nodesField</span><span class="p">,</span>
-						  <span class="na">users</span><span class="p">:</span> <span class="p">{</span>
-							<span class="na">type</span><span class="p">:</span> <span class="nx">GraphQLNonNull</span><span class="p">(</span><span class="nx">UserConnection</span><span class="p">.</span><span class="nx">connectionType</span><span class="p">),</span>
-							<span class="na">args</span><span class="p">:</span> <span class="p">{</span>
-							  <span class="p">...</span><span class="nx">connectionArgs</span><span class="p">,</span>
-							  <span class="na">filters</span><span class="p">:</span> <span class="p">{</span>
-								<span class="na">type</span><span class="p">:</span> <span class="k">new</span> <span class="nx">GraphQLInputObjectType</span><span class="p">({</span>
-								  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">UserFilters</span><span class="dl">'</span><span class="p">,</span>
-								  <span class="na">fields</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">({</span>
-									<span class="na">search</span><span class="p">:</span> <span class="p">{</span>
-									  <span class="na">type</span><span class="p">:</span> <span class="nx">GraphQLString</span><span class="p">,</span>
-									<span class="p">},</span>
-								  <span class="p">})</span>
-								<span class="p">}),</span>
-							  <span class="p">}</span>
-							<span class="p">},</span>
-							<span class="na">resolve</span><span class="p">:</span> <span class="p">(</span><span class="nx">_</span><span class="p">,</span> <span class="nx">args</span><span class="p">,</span> <span class="na">context</span><span class="p">:</span> <span class="nx">GraphQLContext</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">UserLoader</span><span class="p">.</span><span class="nx">loadAll</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">args</span><span class="p">),</span>
-						  <span class="p">},</span>
-						  <span class="p">...</span>
-						<span class="p">}),</span>
-					  <span class="p">});</span>
-					  
-					  </code></pre></div>
-					  
-					  
-					  
-					  <p>On playground take any <em>id</em> returned by <em>UserList</em> and pass it to <em>node</em> query, as this:<br>
-					  </p>
-					  
-					  <div class="highlight"><pre class="highlight typescript"><code><span class="nx">query</span> <span class="nx">Node</span> <span class="p">{</span>
-						  <span class="nx">node</span><span class="p">(</span><span class="nx">id</span><span class="p">:</span> <span class="dl">"</span><span class="s2">VXNlcjo1ZTgyNGM4YTUwZjcwMzdhMjhmZDdmZWU=</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
-						  <span class="nx">id</span>
-						  <span class="nx">__typename</span>
-						<span class="p">}</span>
-					  <span class="p">}</span>
-					  </code></pre></div>
-					  
-					  
-					  
-					  <p>The result on <code>__typename</code> should be the <code>User</code> indicating the GraphQL type of the node.<br>
-					  Well, you just realized how both <em>Node ID</em> and <em>nodeDefinitions</em> are used \o/.</p>
-					  
-					  <p>Now, we will go into a part about how you can improve its implementation.</p>
-					  <h2>
-						<a name="register-type-loader" href="#register-type-loader" class="anchor">
-						</a>
-						Register Type Loader
-					  </h2>
-					  
-					  <p>To all GraphQL types that the server should be able to refetch you must register your <code>type</code> and <code>load</code> GraphQL. <br>
-					  This may involve many imports, many ifs and fast growth of <code>nodeRegistry</code> as it was shown previously. We want to prevent this situation because it does scale well.<br>
-					  In order to avoid the manual register on the <code>nodeRegistry</code> file, we use an object named <em>typesLoaders</em> that assigns a <code>type</code> and a <code>load</code> GraphQL through a function called <em>registerTypeLoader</em>. See again the snippet <code>UserType.ts</code> how simple it is to use it. So, the <code>nodeRegistry</code> just uses that object bringing it with the function <code>getTypesLoaders</code>. Check down its implementation:<br>
-					  </p>
-					  
-					  <div class="highlight"><pre class="highlight typescript"><code><span class="c1">// registerTypeLoader.ts</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">GraphQLObjectType</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">graphql</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">Load</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../types</span><span class="dl">'</span><span class="p">;</span>
-					  
-					  <span class="kd">type</span> <span class="nx">TypeLoaders</span> <span class="o">=</span> <span class="p">{</span>
-						<span class="p">[</span><span class="na">key</span><span class="p">:</span> <span class="kr">string</span><span class="p">]:</span> <span class="p">{</span>
-						  <span class="na">type</span><span class="p">:</span> <span class="nx">GraphQLObjectType</span><span class="p">,</span>
-						  <span class="na">load</span><span class="p">:</span> <span class="nx">Load</span><span class="p">,</span>
-						<span class="p">};</span>
-					  <span class="p">};</span>
-					  
-					  <span class="kd">const</span> <span class="nx">typesLoaders</span><span class="p">:</span> <span class="nx">TypeLoaders</span> <span class="o">=</span> <span class="p">{};</span>
-					  <span class="k">export</span> <span class="kd">const</span> <span class="nx">getTypesLoaders</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">typesLoaders</span><span class="p">;</span>
-					  <span class="k">export</span> <span class="kd">const</span> <span class="nx">registerTypeLoader</span> <span class="o">=</span> <span class="p">(</span><span class="kd">type</span><span class="p">:</span> <span class="nx">GraphQLObjectType</span><span class="p">,</span> <span class="nx">load</span><span class="p">:</span> <span class="nx">Load</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-						<span class="nx">typesLoaders</span><span class="p">[</span><span class="kd">type</span><span class="p">.</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-						  <span class="kd">type</span><span class="p">,</span>
-						  <span class="nx">load</span><span class="p">,</span>
-						<span class="p">};</span>
-					  
-						<span class="k">return</span> <span class="kd">type</span><span class="p">;</span>
-					  <span class="p">};</span>
-					  </code></pre></div>
-					  
-					  
-					  
-					  <p>Use that function to type that you want that should be able to refetch, for instance: <code>UserType.ts</code>, <code>PostType.ts</code>, <code>TransacationType.ts</code> and so on.<br>
-					  </p>
-					  
-					  <div class="highlight"><pre class="highlight typescript"><code><span class="c1">// nodeRegistry.ts - clean implementation</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">fromGlobalId</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">graphql-relay</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">getTypesLoaders</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./registerTypeLoader</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">GraphQLContext</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../types</span><span class="dl">'</span><span class="p">;</span>
-					  
-					  <span class="kd">const</span> <span class="nx">typesLoaders</span> <span class="o">=</span> <span class="nx">getTypesLoaders</span><span class="p">();</span>
-					  <span class="c1">// How to return an object given its globalId</span>
-					  <span class="c1">// Is used to take the ID argument of the node field and use it to resolve an object</span>
-					  <span class="k">export</span> <span class="kd">const</span> <span class="nx">idFetcher</span> <span class="o">=</span> <span class="k">async</span> <span class="p">(</span><span class="nx">globalId</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">context</span><span class="p">:</span> <span class="nx">GraphQLContext</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-						<span class="kd">const</span> <span class="p">{</span> <span class="kd">type</span><span class="p">,</span> <span class="nx">id</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">fromGlobalId</span><span class="p">(</span><span class="nx">globalId</span><span class="p">);</span>
-						<span class="kd">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">typesLoaders</span><span class="p">[</span><span class="kd">type</span><span class="p">].</span><span class="nx">load</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
-					  
-						<span class="k">return</span> <span class="nx">data</span><span class="p">;</span>
-					  <span class="p">};</span>
-					  
-					  <span class="c1">// How to return a GraphQL type given an object</span>
-					  <span class="c1">// Allows your GraphQL server to work out which GraphQL type of object was returned</span>
-					  <span class="k">export</span> <span class="kd">const</span> <span class="nx">typeResolver</span> <span class="o">=</span> <span class="nx">object</span> <span class="o">=&gt;</span> <span class="nx">typesLoaders</span><span class="p">[</span><span class="nx">object</span><span class="p">.</span><span class="kd">constructor</span><span class="p">.</span><span class="nx">name</span><span class="p">].</span><span class="kd">type</span> <span class="o">||</span> <span class="kc">null</span><span class="p">;</span>
-					  </code></pre></div>
-					  
-					  
-					  
-					  <p>Much more structured and clean code, isn't it?</p>
-					  
-					  <h2>
-						<a name="test-node-field" href="#test-node-field" class="anchor">
-						</a>
-						Test node field
-					  </h2>
-					  
-					  <p>To test if your <em>node</em> query works you can try a test by an inline fragment or spread fragment. Here we will show both.<br>
-					  </p>
-					  
-					  <div class="highlight"><pre class="highlight typescript"><code><span class="c1">// NodeDefinitions.spec.ts</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">graphql</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">graphql</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">toGlobalId</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">graphql-relay</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">schema</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../../schema/schema</span><span class="dl">'</span><span class="p">;</span>
-					  
-					  <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should load User by inline fragment</span><span class="dl">'</span><span class="p">,</span> <span class="k">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-						<span class="kd">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">createUser</span><span class="p">();</span>
-					  
-						<span class="kd">const</span> <span class="nx">query</span> <span class="o">=</span> <span class="s2">`
-						  query Node($id: ID!) {
-							node(id: $id) {
-							  id
-							  ... on User {
-								name
-								username
-								isActive
-								__typename
-							  }
-							}
-						  }
-						`</span><span class="p">;</span>
-					  
-						<span class="kd">const</span> <span class="nx">rootValue</span> <span class="o">=</span> <span class="p">{};</span>
-						<span class="kd">const</span> <span class="nx">context</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getContext</span><span class="p">();</span>
-						<span class="kd">const</span> <span class="nx">variables</span> <span class="o">=</span> <span class="p">{</span>
-						  <span class="na">id</span><span class="p">:</span> <span class="nx">toGlobalId</span><span class="p">(</span><span class="dl">'</span><span class="s1">User</span><span class="dl">'</span><span class="p">,</span> <span class="nx">user</span><span class="p">.</span><span class="nx">id</span><span class="p">),</span>
-						<span class="p">};</span>
-					  
-						<span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">graphql</span><span class="p">(</span><span class="nx">schema</span><span class="p">,</span> <span class="nx">query</span><span class="p">,</span> <span class="nx">rootValue</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">variables</span><span class="p">);</span>
-						<span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="o">!</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">variables</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
-						<span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="o">!</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">name</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
-						<span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="o">!</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">username</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">username</span><span class="p">);</span>
-						<span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="o">!</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">isActive</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">isActive</span><span class="p">);</span>
-						<span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="o">!</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">__typename</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="dl">'</span><span class="s1">User</span><span class="dl">'</span><span class="p">);</span>
-					  <span class="p">});</span>
-					  </code></pre></div>
-					  
-					  
-					  
-					  <p>Like we already registered the GraphQL type <code>User</code> and define the <em>nodeField</em> on <code>Query</code> we can test if the <em>node</em> brings the data correctly. First we create a user, after we define the query, a root value which can be an empty object, a context which must be similar to the passed on the your server, the variables that your query needs in that case the <em>id</em>. To execute the query we put that informations into <code>graphql</code> and finally we can to compare the returned data to verify if it is correct or not.<br>
-					  </p>
-					  
-					  <div class="highlight"><pre class="highlight typescript"><code><span class="c1">// NodeDefinitions.spec.ts</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">graphql</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">graphql</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">toGlobalId</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">graphql-relay</span><span class="dl">'</span><span class="p">;</span>
-					  <span class="k">import</span> <span class="p">{</span> <span class="nx">schema</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../../schema/schema</span><span class="dl">'</span><span class="p">;</span>
-					  
-					  <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should load User by spread fragment</span><span class="dl">'</span><span class="p">,</span> <span class="k">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-						<span class="kd">const</span> <span class="nx">user</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">createUser</span><span class="p">();</span>
-					  
-						<span class="kd">const</span> <span class="nx">query</span> <span class="o">=</span> <span class="s2">`
-						  query Node($id: ID!) {
-							node(id: $id) {
-							  id
-							  ...userFields
-							  __typename
-							}
-						  }
-					  
-						  fragment userFields on User {
-							name
-							username
-							isActive
-						  }
-						`</span><span class="p">;</span>
-					  
-						<span class="kd">const</span> <span class="nx">rootValue</span> <span class="o">=</span> <span class="p">{};</span>
-						<span class="kd">const</span> <span class="nx">context</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">getContext</span><span class="p">();</span>
-						<span class="kd">const</span> <span class="nx">variables</span> <span class="o">=</span> <span class="p">{</span>
-						  <span class="na">id</span><span class="p">:</span> <span class="nx">toGlobalId</span><span class="p">(</span><span class="dl">'</span><span class="s1">User</span><span class="dl">'</span><span class="p">,</span> <span class="nx">user</span><span class="p">.</span><span class="nx">_id</span><span class="p">),</span>
-						<span class="p">};</span>
-					  
-						<span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">graphql</span><span class="p">(</span><span class="nx">schema</span><span class="p">,</span> <span class="nx">query</span><span class="p">,</span> <span class="nx">rootValue</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">variables</span><span class="p">);</span>
-						<span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="o">!</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">variables</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
-						<span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="o">!</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">name</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
-						<span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="o">!</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">username</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">username</span><span class="p">);</span>
-						<span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="o">!</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">isActive</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">isActive</span><span class="p">);</span>
-						<span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="o">!</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">__typename</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="dl">'</span><span class="s1">User</span><span class="dl">'</span><span class="p">);</span>
-					  <span class="p">});</span>
-					  </code></pre></div>
-					  
-					  
-					  
-					  <p>This second test is just to check that our <em>node</em> also works with spread fragment and has the same behavior as the first. However, the test fulfills its role of checking if it works for both types of query. </p>
-					  
-					  <h2>
-						<a name="next" href="#next" class="anchor">
-						</a>
-						Next
-					  </h2>
-					  
-					  <p>Recently the relay team made a commit named <a href="https://github.com/facebook/relay/commit/6ed719438829d02912c862407bbf84a6374f14f3">@refetchable support for @fetchable types</a> in which they add the <code>@fetchable</code> directive. It has the role to define the schema to specify that a GraphQL type is refetchable and what field should be used to refetch it. Therefore, this is a generalization of the pattern explained in this post. Instead <em>node</em> on <code>QueryType</code> we must define <em>foo root field</em> could implement refetchable on top of our custom <em>Foo Node Interface</em>. It's basically the <em>node</em> interface with different field names.</p>
-					  
-					  <h2>
-						<a name="conclusion" href="#conclusion" class="anchor">
-						</a>
-						Conclusion
-					  </h2>
-					  
-					  <ul>
-					  <li>Declare <code>globalIdField</code> on your GraphQL type to make GraphQL auto-generate a unique global <em>Node ID</em> for your GraphQL object during creation and ensure that it must be refetched.</li>
-					  <li>Implement <em>nodeDefinitions</em> methods to map <em>Node ID</em> back to the corresponding server-side object, which you then can use to return other or updated attributes when a refetch provides the <em>Node ID</em>.</li>
-					  <li>Use <em>nodeInterface</em> on your GraphQL type to instruct GraphQL to use the <em>nodeDefinitions</em> implementation to resolve between <em>Node ID</em> and actual server-side objects.</li>
-					  <li>Use the <em>registerTypeLoader</em> to avoid the manual register on the <code>nodeRegistry</code> file and make the code more organized and scalable.</li>
-					  <li>Use tests to avoid unwanted behaviors.</li>
-					  <li>There was a generalization in the pattern. </li>
-					  </ul>
-					  
-					  <h2>
-						<a name="resources" href="#resources" class="anchor">
-						</a>
-						Resources
-					  </h2>
-					  
-					  <ul>
-					  <li>
-					  <a href="https://relay.dev/graphql/objectidentification.htm">GraphQL Global Object Identification Specification</a>.</li>
-					  <li>
-					  <a href="https://medium.com/code-oil/relay-graphql-de-mystifying-node-id-38757121b9c">Relay/GraphQL: De-mystifying Node Interface/ID</a>.</li>
-					  <li>
-					  <a href="https://stackoverflow.com/questions/42576581/what-is-nodeinterface-nodefield-and-nodedefinitions-in-relay">What is nodeInterface, nodeField and nodeDefinitions in Relay?</a>.</li>
-					  <li>
-					  <a href="https://github.com/facebook/relay/commits/master">Relay Commits</a>.</li>
-					  </ul>
-					  
+					<p>Are you curious how open-source Laravel packages are developed from scratch? Or are you unsure whether any specific functionality makes a good use case to be a Laravel package?</p>
+
+<p>Let’s talk about these and other related questions today.</p>
+
+<p>We all are fans of Laravel and its ecosystem for its simplicity and extensibility. Packages have been playing a major role in moving it forward. Especially official packages by Laravel,  <a href="https://spatie.be/en/opensource">Spatie</a>  ,  <a href="https://github.com/barryvdh/">Barry vd.</a> , and others have made our lives and code better.</p>
+
+<h3>
+  <a name="why-you-should-build-a-laravel-package" href="#why-you-should-build-a-laravel-package">
+  </a>
+  Why you should build a Laravel Package
+</h3>
+
+<p><strong>Better coding skills</strong></p>
+
+<p>Open-source is magical. Putting your code out into the public makes you a bit vulnerable at the beginning but brings out the best of you. The fear of doing something wrong prevents every bit of you from doing the  <code>git push origin master</code>  but it’s always worth it. Laracasts’ series on  <a href="https://laracasts.com/series/how-to-manage-an-open-source-project">open source project management</a> can help a lot if you’re not well-versed with GitHub.</p>
+
+<p><strong>More (and better) work</strong></p>
+
+<p>You will build you brand leading to more work.</p>
+
+<blockquote>
+<p>"Talk is cheap. Show me the code." - Linus Torvalds (creator of Linux and Git)</p>
+</blockquote>
+
+<p>As developers and clients see your code and benefit from it, you will get more recognition.</p>
+
+<p><strong>Save time</strong></p>
+
+<p>You will save yourself considerable amount of time when you convert a piece of code, that you are using in more than one projects, into a package. “DRY” approach isn’t a new thing. We know its benefits.</p>
+
+<p>In short, open-source package development makes your developer life better.</p>
+
+<p>Now that we have a better idea about the need to go ahead with package development, let’s make one together now.</p>
+
+<p>On a side note, contributing to an existing solution is also a great way to start if there is already an open-source package/library of your choice.</p>
+
+<h4>
+  <a name="a-new-laravel-package-from-scratch" href="#a-new-laravel-package-from-scratch">
+  </a>
+  A new Laravel package from scratch
+</h4>
+
+<p><code>Note:</code>  I had said we will be building a real package. While thinking about an example, the only good option I could come up with was one of my own packages -  <a href="https://github.com/freshbitsweb/laravel-log-enhancer">Laravel Log Enhancer</a>. It is short enough to cover quickly as well as plays with important parts of package development to learn the basics properly.</p>
+
+<p><iframe width="710" height="399" src="https://www.youtube.com/embed/DQnUyQEcs_A" allowfullscreen loading="lazy">
+</iframe>
+</p>
+
+<p>If you haven’t created any Laravel package before, I insist you to do this with me.  <em>It’ll be fun</em>. Even if you make the same package, you’ll have more confidence and will be inspired to make changes or create a new one instantly. All the steps are undoable - you’ve nothing to lose. And true learning is all about doing the things practically. Our requirements are basic. If you’re already running any Laravel app locally, you’ve it all.</p>
+
+<p>Let’s start.</p>
+
+<p><strong>1. New package directory</strong></p>
+
+<p>Create a directory with a name of the package. I will call it  <code>laravel-log-enhancer</code>.<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight plaintext"><code>mkdir laravel-log-enhancer &amp;&amp; cd laravel-log-enhancer 
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<p><strong>2. Love for git</strong></p>
+
+<p>Initialize a git repository. We’ll need GitHub repo to put the package online.<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight plaintext"><code>git init
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<p><strong>3. composer.json</strong></p>
+
+<p>Every package starts with a  <code>composer.json</code>  file. Let’s create it. The easiest way to create it is to fire the  <code>init</code>  command.<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight plaintext"><code>composer init
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<p>Or you can just copy it from  <a href="https://gist.github.com/gauravmak/04badd41d58d8f27648532e93876a634">this stub</a> and make changes accordingly.</p>
+
+<p><a href="https://res.cloudinary.com/practicaldev/image/fetch/s--TDyNdoRP--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/i/t4kxstetmqwseoh7rkcf.png" class="article-body-image-wrapper"><img src="https://res.cloudinary.com/practicaldev/image/fetch/s--TDyNdoRP--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/i/t4kxstetmqwseoh7rkcf.png" alt="Package Composer json file" loading="lazy"></a></p>
+
+<p>Commit the change. Not compulsory but we will do it after each unique step as a good habit.</p>
+
+<p><strong>4. Namespace and autoloading</strong></p>
+
+<p>We will put the main code of our package in  <code>src</code>  directory.<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight plaintext"><code>mkdir src &amp;&amp; cd src
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<p>By the way, just like Laravel web app development, there are no hard rules about directory structure here but a helpful convention to follow.</p>
+
+<p>We will update our  <code>composer.json</code>  file for 2 important things.</p>
+
+<ul>
+<li>  When a Laravel project uses our package, we can inform it about the location of the files of the package to be loaded by putting the path in PSR-4 autoloading part of  <code>composer.json</code>.</li>
+<li>  To make the installation easy for the developer, we will put the location of the service provider, that should be automatically detected by Laravel, in  <code>extra</code>  section of the file.
+</li>
+</ul>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight plaintext"><code>...
+"autoload": {
+    "psr-4": {
+        "Freshbitsweb\\LaravelLogEnhancer\\": "src/"
+    }
+},
+"extra": {
+    "laravel": {
+        "providers": [
+            "Freshbitsweb\\LaravelLogEnhancer\\LaravelLogEnhancerServiceProvider"
+        ]
+    }
+}
+...
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<p>By  <em>autoload</em>, the parent Laravel web app knows about our base namespace i.e.  <code>Freshbitsweb\LaravelLogEnhancer</code>  and the files location which is the  <code>src</code>  directory. And Laravel’s awesome  <a href="https://laravel-news.com/package-auto-discovery">package discovery</a> feature helps us remove a step from package installation process.</p>
+
+<p><strong>5. The service provider dilemma:</strong></p>
+
+<p>Many beginners stuck at this stage. Don’t worry. Let’s try to simplify this. A service provider is a file that can tell the parent Laravel application about various offerings of the package.</p>
+
+<p>Common belief is that we always need a service provider for a package. That’s not the case. If your package doesn’t need to  <em>autoload</em>  <a href="https://laravel.com/docs/packages#resources">any resources</a> in advance, it can skip the service provider. But in most of the cases, for a package to be useful enough, service provider is required.</p>
+
+<p>We will use it in our case to load the default configuration options of the package as well as offer an option to export those config options to the parent Laravel web app.<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight plaintext"><code>&lt;?php
+
+namespace Freshbitsweb\LaravelLogEnhancer;
+
+use Illuminate\Support\ServiceProvider;
+
+class LaravelLogEnhancerServiceProvider extends ServiceProvider
+{
+    /**
+     * Publishes configuration file.
+     *
+     * @return  void
+     */
+    public function boot()
+    {
+        $this-&gt;publishes([
+            __DIR__.'/../config/laravel_log_enhancer.php' =&gt; config_path('laravel_log_enhancer.php'),
+        ], 'laravel-log-enhancer-config');
+    }
+
+    /**
+     * Make config publishment optional by merging the config from the package.
+     *
+     * @return  void
+     */
+    public function register()
+    {
+        $this-&gt;mergeConfigFrom(
+            __DIR__.'/../config/laravel_log_enhancer.php',
+            'laravel_log_enhancer'
+        );
+    }
+}
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<p>The code is quite simple here. In the  <code>boot</code>  method, we put the code to allow the developer to export the config options by simply writing:<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight plaintext"><code>php artisan vendor:publish -tag=laravel-log-enhancer-config
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<p>And in the  <code>register</code>  method, we tell the Laravel app to add the config options from our file into the web app config. Commit the update and let’s create our config file next.</p>
+
+<p><strong>6. Config options:</strong></p>
+
+<p>As a part of the convention, we will put our config file in  <code>config</code>  directory inside root folder next to src directory.<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight plaintext"><code>mkdir config &amp;&amp; cd config &amp;&amp; touch laravel_log_enhancer.php 
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<p>Put the following code in the file.<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight plaintext"><code>&lt;?php
+
+return [
+    'log_request_details' =&gt; true,
+
+    'log_input_data' =&gt; true,
+
+    'log_request_headers' =&gt; false,
+
+    'log_session_data' =&gt; true,
+
+    'log_memory_usage' =&gt; false,
+
+    'log_git_data' =&gt; false,
+
+    // You can specify the inputs from the user that should not be logged
+    'ignore_input_fields' =&gt; ['password', 'confirm_password'],
+];
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<p>This file contains few configuration options just like a regular Laravel config file. Commit.</p>
+
+<p><strong>7. Package classes</strong></p>
+
+<p>Final piece of code, for actual enhancement of Laravel logs, is the  <code>LogEnhancer.php</code>  file. To keep the length of the article digestible, I will directly link you to  <a href="https://github.com/freshbitsweb/laravel-log-enhancer/blob/master/src/LogEnhancer.php">the actual class</a> that you can copy. We also have  <a href="https://github.com/freshbitsweb/laravel-log-enhancer/blob/master/src/RequestDataProcessor.php"><code>RequestDataProcessor.php</code></a> in the package. Put both of them in the  <code>src</code>  directory and you should be good to go.</p>
+
+<p><strong>8. Other important files</strong></p>
+
+<p>There are few other files that we need to add finally.</p>
+
+<ul>
+<li>  <a href="https://github.com/freshbitsweb/laravel-log-enhancer/blob/master/.gitignore">.gitignore</a>
+</li>
+<li>  <a href="https://github.com/freshbitsweb/laravel-log-enhancer/blob/master/LICENSE">LICENSE</a>
+</li>
+<li>  <a href="https://github.com/freshbitsweb/laravel-log-enhancer/blob/master/README.md">README.md</a>
+</li>
+</ul>
+
+<p>README file needs a special mention here. It is the face of the package. You should be writing detailed installation steps and other notes with proper flow in this file. Go through this  <a href="https://guides.github.com/features/wikis/">GitHub guide</a> for more.</p>
+
+<p>Commit this change and now our package is ready to use.</p>
+
+<p>What next? It’s time to release it.</p>
+
+<h4>
+  <a name="how-to-release-the-package" href="#how-to-release-the-package">
+  </a>
+  How to release the package
+</h4>
+
+<p>If you haven’t pushed the package code to GitHub, do it first. If you don’t know how,  <a href="https://help.github.com/articles/adding-an-existing-project-to-github-using-the-command-line/">this article</a> can help.</p>
+
+<p>Then, head over to  <a href="https://packagist.org/">Packagist</a> , create an account or sign in, Click on Submit, specify the GitHub repo URL, … Steps are quite easy and self-explanatory. You should also enable Auto update of the package and consider  <a href="https://semver.org/">Semantic versioning</a> and  <a href="https://help.github.com/articles/creating-releases/">releasing</a> .</p>
+
+<p><a href="https://res.cloudinary.com/practicaldev/image/fetch/s--FyxkMCqB--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/i/euf25jnzvbbh3hlziyty.png" class="article-body-image-wrapper"><img src="https://res.cloudinary.com/practicaldev/image/fetch/s--FyxkMCqB--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/i/euf25jnzvbbh3hlziyty.png" alt="Packagist screenshot" loading="lazy"></a></p>
+
+<p><strong>Congrats.</strong>  We’re done. Breath for a few minutes. There’s more.</p>
+
+<p>Next, there are many other things are not part of the package development but are important for the development lifecycle and maintenance. Let’s go through them quickly.</p>
+
+<h4>
+  <a name="how-to-use-the-package-locally" href="#how-to-use-the-package-locally">
+  </a>
+  How to use the package locally
+</h4>
+
+<p>We don’t have to push the updates online before testing it locally. Composer repositories path to the rescue.</p>
+
+<p>Not just the package, we can do it with any repository. Here’s a  <a href="https://tighten.co/blog/testing-laravel-framework-changes-locally-before-submitting-a-pull-request">great article</a> explaining the details.</p>
+
+<p>Let’s do it. Install a fresh Laravel app next to your package directory.<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight plaintext"><code>laravel new laravel-with-package
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<p>Make changes in it’s  <code>composer.json</code>  file<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight plaintext"><code>...
+"repositories": [
+    {
+        "type": "path",
+        "url": "../laravel-log-enhancer"
+    }
+],
+...
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<p>Install the package by firing the following command.<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight plaintext"><code>composer require gauravmak/laravel-log-enhancer
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<p>Complete the  <a href="https://github.com/freshbitsweb/laravel-log-enhancer#installation">installation steps</a> and you can use the package now.</p>
+
+<h4>
+  <a name="testing" href="#testing">
+  </a>
+  Testing
+</h4>
+
+<blockquote>
+<p>“I find that weeks of coding and testing can save me hours of planning.” -<br>
+ Unknown</p>
+</blockquote>
+
+<p>They say - do not use a package without tests. They’re right. As the package gets bigger in size and more contributors enter the scene, some random commit can break the code functionality somewhere down the line. And we never want it to happen, right?</p>
+
+<p>And it’ not hard. All we need to do it to check if the package is doing what it is supposed to do after every change/commit. In this package, we are adding processors to the Monolog handlers so that more data can be logged.</p>
+
+<p>Unfortunately, as of now, Monolog doesn’t provide a method to fetch the processors of a handler so we are limited but let’s create a base of the testing for this package so that you know how to add tests to your custom package.</p>
+
+<p>To start, we will add requirements to the  <code>composer.json</code>  file.<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight plaintext"><code>...
+"require-dev": {
+    "phpunit/phpunit": "^7.0",
+    "orchestra/testbench": "~3.6.0"
+ },
+ "autoload-dev": {
+    "psr-4": {
+        "Freshbitsweb\\LaravelLogEnhancer\\Test\\": "tests"
+    }
+ },
+ ...
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<p>We are basically testing a package which is outside a Laravel app.  <a href="https://github.com/orchestral/testbench">orchestral/testbench</a> is a great package which can add the necessary dependencies so that we can test it as if we have all the Laravel goodies.</p>
+
+<p>I have also added the following files to make the base of testing for our app.</p>
+
+<ul>
+<li>  <a href="https://github.com/freshbitsweb/laravel-log-enhancer/blob/master/phpunit.xml.dist">phpunit.xml.dist</a>
+</li>
+<li>  <a href="https://github.com/freshbitsweb/laravel-log-enhancer/blob/master/tests/LogEnhancerTest.php">LogEnhancerTest.php</a>
+</li>
+<li>  <a href="https://github.com/freshbitsweb/laravel-log-enhancer/blob/master/tests/TestCase.php">TestCase.php</a>
+</li>
+</ul>
+
+<p>Go through the README file of the testbench package for all details about how we can interact with Laravel while testing our package.</p>
+
+<h4>
+  <a name="integrations" href="#integrations">
+  </a>
+  Integrations
+</h4>
+
+<p>There are so many helpful tools that integrate with GitHub repo and help us maintain the packages/libraries easily.</p>
+
+<p>I suggest  <a href="https://github.com/marketplace/travis-ci">Travis CI</a> for testing the package after each update and  <a href="https://github.com/marketplace/styleci">StyleCI</a> for maintaing the code style.</p>
+
+<p>I have integrated StyleCI in the package already. You should also consider  <a href="https://poser.pugx.org/">adding badges</a> to the README file.</p>
+
+<p><a href="https://res.cloudinary.com/practicaldev/image/fetch/s--BTSeSEjS--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/i/kujka3mxmuct6g7x38u2.png" class="article-body-image-wrapper"><img src="https://res.cloudinary.com/practicaldev/image/fetch/s--BTSeSEjS--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/i/kujka3mxmuct6g7x38u2.png" alt="Package Badges" loading="lazy"></a></p>
+
+<h4>
+  <a name="secret-sauce-of-a-successful-package" href="#secret-sauce-of-a-successful-package">
+  </a>
+  Secret sauce of a successful package
+</h4>
+
+<p>You reap the benefits of making the package when more and more developers use it. And for that, there are so many factors starting from the basic idea behind the package to the stability and age of the package (stars).</p>
+
+<p>If I were to decide on most important point for that, it would be the  <em>developer friendliness</em>  of the package. Yes, the exact reason why Laravel is popular.</p>
+
+<p>Try to minimize the installation steps and the code that is required to use the package. Plus, it has to be  <strong>readable enough</strong>  that it doen’t need to annotated with long comments.</p>
+
+<p>For example,<br>
+</p>
+
+<div class="highlight js-code-highlight">
+<pre class="highlight plaintext"><code>$users = User::with('roles')-&gt;get();
+</code></pre>
+<div class="highlight__panel js-actions-panel">
+<div class="highlight__panel-action js-fullscreen-code-action">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+    <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+</svg>
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+    <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+</svg>
+
+</div>
+</div>
+</div>
+
+
+
+<p>So simple, we know this operation involves join queries and other stuff. Still, you like to write it and read it. Do things on a similar level.</p>
+
+<h4>
+  <a name="final-notes" href="#final-notes">
+  </a>
+  Final notes
+</h4>
+
+<p>That’s it for the day. We learned why package development is good for everyone and how to do it step-by-step using a real example. If you have any questions or get stuck anywhere, just add a comment below, I would be happy to help.</p>
+
+<p>And If you think this can help other Laravel developers in your online network, I’d be happy to see you  <a href="https://twitter.com/intent/tweet?text=%F0%9F%94%A5Checkout%20step%20by%20step%20guide%20to%20Laravel%20package%20development%20%F0%9F%93%A6%20with%20a%20real%20example.&amp;url=https://dev.to/gauravmak/step-by-step-guide-to-laravel-package-development-4nj1&amp;via=gauravmakhecha&amp;related=laravelphp&amp;hashtags=laravel">sharing</a> this with them. Thanks.</p>
+
+
+  
                 </div>
               </div>
             </div>

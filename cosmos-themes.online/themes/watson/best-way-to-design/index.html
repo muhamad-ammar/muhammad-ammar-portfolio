@@ -113,37 +113,37 @@
                 <nav id="primary-menu" class="nav-menu slide-menu">
                   <ul id="menu-main-menu" class="menu">
                     <li data-id="menu-item-54" class=" menu-item menu-item-type-post_type menu-item-object-page menu-item-home has-menu-icon">
-                      <a href="https://cosmos-themes.online/themes/watson#home" class="no-scroll">
+                      <a href="../../../../index.html#home" class="no-scroll">
                         <span class='nav-menu-icon'>
                           <i class='lnr lnr-home'></i>
                         </span>Home </a>
                     </li>
                     <li data-id="menu-item-57" class=" menu-item menu-item-type-post_type menu-item-object-page has-menu-icon">
-                      <a href="https://cosmos-themes.online/themes/watson#about" class="no-scroll">
+                      <a href="../../../../index.html#about" class="no-scroll">
                         <span class='nav-menu-icon'>
                           <i class='lnr lnr-user'></i>
                         </span>About Me </a>
                     </li>
                     <li data-id="menu-item-55" class=" menu-item menu-item-type-post_type menu-item-object-page has-menu-icon">
-                      <a href="https://cosmos-themes.online/themes/watson#resume" class="no-scroll">
+                      <a href="../../../../index.html#resume" class="no-scroll">
                         <span class='nav-menu-icon'>
                           <i class='lnr lnr-license'></i>
                         </span>Resume </a>
                     </li>
                     <li data-id="menu-item-88" class=" menu-item menu-item-type-post_type menu-item-object-page has-menu-icon">
-                      <a href="https://cosmos-themes.online/themes/watson#portfolio" class="no-scroll">
+                      <a href="../../../../index.html#portfolio" class="no-scroll">
                         <span class='nav-menu-icon'>
                           <i class='lnr lnr-briefcase'></i>
                         </span>Portfolio </a>
                     </li>
                     <li data-id="menu-item-89" class=" menu-item menu-item-type-post_type menu-item-object-page has-menu-icon">
-                      <a href="https://cosmos-themes.online/themes/watson#blog" class="no-scroll">
+                      <a href="../../../../index.html#blog" class="no-scroll">
                         <span class='nav-menu-icon'>
                           <i class='lnr lnr-book'></i>
                         </span>Blog </a>
                     </li>
                     <li data-id="menu-item-70" class=" menu-item menu-item-type-post_type menu-item-object-page has-menu-icon">
-                      <a href="https://cosmos-themes.online/themes/watson#contact" class="no-scroll">
+                      <a href="../../../../index.html#contact" class="no-scroll">
                         <span class='nav-menu-icon'>
                           <i class='lnr lnr-envelope'></i>
                         </span>Contact </a>
@@ -299,721 +299,277 @@
                   <div class="categories">
                     <a class="category-name" href="../category/web-design/index.html">Frontend</a>
                   </div>
-                  <h1 class="post-title">Router options compared: Vue Router, Voie, Vue-routisan and Vue-route</h1>
-                  <span class="post-date">Jul 9, 2019</span>
+                  <h1 class="post-title">What are React Hooks?</h1>
+                  <span class="post-date">Jul 28 , 2019</span>
                 </div>
                 <div class="post-content col-md-10 offset-md-1">
                   <div class="post-full-content">
                     <h2>
-						<a name="introduction" href="#introduction" class="anchor">
+						<a name="introduction" href="#introduction">
 						</a>
-						Introduction
+						Introduction <a name="1"></a>
 					  </h2>
-
-						<p>The arrival of modern web frameworks has changed the way developers think and build software. We can now use flexible frameworks (with really cool names) — such as <a href="https://angular.io/">Angular</a>, <a href="https://reactjs.org/">React</a> and <a href="https://vuejs.org/">Vue</a> — to easily whip up appealing interfaces.</p>
-
-						<p>Some benefits of working with modern front-end frameworks include:</p>
-						
-						<ul>
-						<li><a href="https://www.freecodecamp.org/news/reacts-jsx-vs-vue-s-templates-a-showdown-on-the-front-end-b00a70470409/">A template system</a></li>
-						<li>Progressive web application (PWA) features</li>
-						<li>Reactivity (data-binding)</li>
-						<li>Optimization</li>
-						<li>Routing</li>
-						<li>Single Page Applications (SPA)</li>
-						</ul>
-						
-						<p><a href="https://logrocket.com/signup/"><img src="https://res.cloudinary.com/practicaldev/image/fetch/s--QIqNZKME--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://i0.wp.com/blog.logrocket.com/wp-content/uploads/2017/03/f760c-1gpjapknnuyhu8esa3z0jga.png%3Fresize%3D1200%252C280%26ssl%3D1" alt="LogRocket Free Trial Banner" loading="lazy"></a></p>
-						
-						<p>Each framework has a unique way of solving problems but the general concept of a framework regulates the fundamental similarities amongst them. In this article, we will look at client-side routing, its importance and Vue Router — our preferred router for Vue applications.</p>
-						
-						<p>SPA’s are web applications that display dynamic content within the space of a single page throughout the duration of the interaction. SPA’s work by neatly replacing the user interface of the application as the user switches from page to page.</p>
-						
-						<p>A SPA knows how to make these page transitions using a router. The router is responsible for the synchronicity between the URL address bar and the interface being displayed. In web development, there have been two fundamental methods for rendering content to the web browser:</p>
-						
-						<ol>
-						<li>Client-side</li>
-						<li>Server-side</li>
-						</ol>
-						
-						<p>With the server-side method, the client makes a request to a server whenever new content is expected. The obvious downside to this is it can be wastefully repetitive in its interaction with the back-end resource. The good side — it is great for SEO because crawler bots are supplied with content to index.</p>
-						
-						<p>With the client-side method, the web application will initially request a page from the back-end server — <code>index.html</code> — then after that first request, additional data will be fetched dynamically (using an <code>[XHR](https://www.w3schools.com/xml/xml_http.asp)</code> object). The application’s further routing will be handled by client-side JavaScript.</p>
-						
-						<p>Let’s define our subject of discussion — routers:</p>
-						
-						<blockquote>
-						<p>A router is a tool that synchronizes the currently displayed view with the address bar. In other words, it’s the component of a modern web application that triggers the update for the view when there has been a change to the URL address.</p>
-						</blockquote>
-						
-						<p>We will be considering Vue as the progressive JavaScript framework of interest. It has an official router module called <a href="https://router.vuejs.org/">Vue Router.</a> This router is constantly being maintained by the same people who maintain the Vue framework.</p>
-						
-						<h2>
-						  <a name="what-is-vue-router" href="#what-is-vue-router" class="anchor">
-						  </a>
-						  What is Vue Router?
-						</h2>
-						
-						<p>Vue Router is the official router for <a href="http://vuejs.org/">Vue</a>. It deeply integrates with Vue core to make building SPAs with Vue a breeze. Some features of Vue Router are:</p>
-						
-						<ul>
-						<li><a href="https://router.vuejs.org/guide/essentials/nested-routes.html">Nested route/view mapping</a></li>
-						<li><a href="https://router.vuejs.org/api/#to">Route params, query, wildcards</a></li>
-						<li><a href="https://router.vuejs.org/guide/advanced/transitions.html">View transition effects powered by Vue.js’ transition system</a></li>
-						<li><a href="https://router.vuejs.org/api/#linkactiveclass">Links with automatic active CSS classes</a></li>
-						<li><a href="https://router.vuejs.org/guide/essentials/history-mode.html">HTML5 history mode or hash mode, with auto-fallback in IE9</a></li>
-						<li>
-						<a href="https://router.vuejs.org/guide/advanced/scroll-behavior.html">Customizable</a> <a href="https://router.vuejs.org/guide/advanced/scroll-behavior.html">scroll</a> <a href="https://router.vuejs.org/guide/advanced/scroll-behavior.html">behavior</a>
-						</li>
-						</ul>
-						
-						<p>Let’s find out some of the benefits of Vue Router by setting it up and working with it.</p>
-						
-						<h2>
-						  <a name="working-with-vue-router" href="#working-with-vue-router" class="anchor">
-						  </a>
-						  Working with Vue Router
-						</h2>
-						
-						<p>Although there are a number of ways to set up a Vue project, our preferred method for this tutorial is the <a href="https://cli.vuejs.org/">vue-cli.</a> The vue-cli gives us the benefit of being able to quickly scaffold and serve Vue projects. We are going to use the latest version of the tool (version 3) as at the time of writing this article — if you do not already have it installed, you can install it <a href="https://cli.vuejs.org/">here.</a></p>
-						
-						<h3>
-						  <a name="creating-a-new-project" href="#creating-a-new-project" class="anchor">
-						  </a>
-						  <strong>Creating a new project</strong>
-						</h3>
-						
-						<p>We can create a new Vue project with this command:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="nx">vue</span> <span class="nx">create</span> <span class="nx">routerapp</span>
-						</code></pre></div>
-						
-						
-						
-						<p>You will be prompted to pick a preset, choose default (babel, eslint).</p>
-						
-						<h3>
-						  <a name="installing-vue-router" href="#installing-vue-router" class="anchor">
-						  </a>
-						  <strong>Installing Vue Router</strong>
-						</h3>
-						
-						<p>Let’s add Vue Router to our project:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="nx">npm</span> <span class="nx">install</span> <span class="nx">vue</span><span class="o">-</span><span class="nx">router</span>
-						</code></pre></div>
-						
-						
-						
-						<blockquote>
-						<p>Note: This would be <code>yarn add vue-router</code> if you use Yarn. If you prefer to use Vue via a script tag, you can include Vue Router with this script: <code>&lt;script src="https://unpkg.com/vue-router"&gt;&lt;/script&gt;</code></p>
-						</blockquote>
-						
-						<h3>
-						  <a name="configuring-the-router" href="#configuring-the-router" class="anchor">
-						  </a>
-						  <strong>Configuring the router</strong>
-						</h3>
-						
-						<p>We have successfully installed Vue Router but there is no way for Vue to know about its existence. We will explicitly tell Vue to use Vue Router in the <code>src/main.js</code> file:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="k">import</span> <span class="nx">Vue</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">vue</span><span class="dl">'</span>
-						<span class="k">import</span> <span class="nx">App</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./App.vue</span><span class="dl">'</span>
-						<span class="k">import</span> <span class="nx">VueRouter</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">vue-router</span><span class="dl">'</span>
-						<span class="k">import</span> <span class="nx">routes</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./routes</span><span class="dl">'</span>
-						
-						<span class="nx">Vue</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">VueRouter</span><span class="p">)</span>
-						<span class="kd">const</span> <span class="nx">router</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">VueRouter</span><span class="p">({</span>
-						  <span class="nx">routes</span>
-						<span class="p">})</span>
-						
-						<span class="nx">Vue</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">productionTip</span> <span class="o">=</span> <span class="kc">false</span>
-						
-						<span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
-						  <span class="na">render</span><span class="p">:</span> <span class="nx">h</span> <span class="o">=&gt;</span> <span class="nx">h</span><span class="p">(</span><span class="nx">App</span><span class="p">),</span>
-						  <span class="nx">router</span>
-						<span class="p">}).</span><span class="nx">$mount</span><span class="p">(</span><span class="dl">'</span><span class="s1">#app</span><span class="dl">'</span><span class="p">)</span>
-						</code></pre></div>
-						
-						
-						
-						<blockquote>
-						<p>Note: Your IDE might display an error if you try to save but this is only because we haven’t created the — routes — folder yet. We will create it next, so ignore the error for now.</p>
-						</blockquote>
-						
-						<p>We have included a reference to a folder — <code>./routes</code> — that hasn’t been created yet. This folder will contain a file where we will define the routes and the views they map to.</p>
-						
-						<p>We called <code>Vue.use()</code> and passed in the <code>VueRouter</code> object so that we have access to the router in any component. Let’s create the <code>routes</code> folder within the <code>src</code> directory. We will also create an <code>index.js</code> file within the <code>src/routes</code> folder where our route definitions will be saved.</p>
-						
-						<p>Open the <code>src/routes/index.js</code> file and paste in the following snippet:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="k">import</span> <span class="nx">Home</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../components/Home</span><span class="dl">'</span>
-						<span class="k">import</span> <span class="nx">About</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../components/About</span><span class="dl">'</span>
-						
-						<span class="kd">const</span> <span class="nx">routes</span> <span class="o">=</span> <span class="p">[</span>
-							<span class="p">{</span>
-								<span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/</span><span class="dl">'</span><span class="p">,</span>
-								<span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">home</span><span class="dl">'</span><span class="p">,</span>
-								<span class="na">component</span><span class="p">:</span> <span class="nx">Home</span>
-							<span class="p">},</span>
-							<span class="p">{</span>
-								<span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/about</span><span class="dl">'</span><span class="p">,</span>
-								<span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">about</span><span class="dl">'</span><span class="p">,</span>
-								<span class="na">component</span><span class="p">:</span> <span class="nx">About</span>
-							<span class="p">}</span>
-						<span class="p">]</span>
-						<span class="k">export</span> <span class="k">default</span> <span class="nx">routes</span>
-						</code></pre></div>
-						
-						
-						
-						<blockquote>
-						<p>Note: Just as before, we have referenced a few files that are yet to be created. Ignore any lint errors for now. We will create these view files very soon.</p>
-						</blockquote>
-						
-						<p>In the code snippet above, we have defined a few routes and their views. We imported two component views (we will create these soon) and added them as components in the <code>routes</code> array. This is how we define new routes with Vue Router.</p>
-						
-						<h3>
-						  <a name="building-the-components" href="#building-the-components" class="anchor">
-						  </a>
-						  <strong>Building the components</strong>
-						</h3>
-						
-						<p>Let’s create the <code>Home</code> and <code>About</code> components:</p>
-						
-						<ol>
-						<li>The <code>Home</code> component is the default component we want users to see on page load</li>
-						<li>The <code>About</code> component displays some information about the application</li>
-						</ol>
-						
-						<p>Create a <code>home.vue</code> file within the <code>components</code> directory and paste in the following snippet:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="p">&lt;</span><span class="nt">template</span><span class="p">&gt;</span>
-						 <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="p">=</span><span class="s">"home"</span><span class="p">&gt;</span>
-						   <span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>THIS IS THE HOME VIEW<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
-						 <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-						<span class="p">&lt;/</span><span class="nt">template</span><span class="p">&gt;</span>
-						<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
-						
-						export default <span class="si">{</span>
-						 <span class="nx">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">home</span><span class="dl">"</span>
-						<span class="si">}</span>;
-						
-						<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-						<span class="p">&lt;</span><span class="nt">style</span> <span class="na">scoped</span><span class="p">&gt;</span>
-						.home <span class="si">{</span>
-						 <span class="nx">width</span><span class="p">:</span> <span class="mi">100</span><span class="o">%</span><span class="p">;</span>
-						 <span class="nl">height</span><span class="p">:</span> <span class="mi">50</span><span class="nx">vh</span><span class="p">;</span>
-						 <span class="nl">background</span><span class="p">:</span> <span class="nx">rgb</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">169</span><span class="p">,</span> <span class="mi">241</span><span class="p">);</span>
-						<span class="si">}</span>
-						h2 <span class="si">{</span>
-						 <span class="nx">padding</span><span class="p">:</span> <span class="mi">15</span><span class="nx">px</span> <span class="mi">0</span><span class="nx">px</span> <span class="mi">0</span><span class="nx">px</span> <span class="mi">0</span><span class="nx">px</span><span class="p">;</span>
-						 <span class="nl">margin</span><span class="p">:</span> <span class="mi">0</span><span class="nx">px</span><span class="p">;</span>
-						 <span class="nx">text</span><span class="o">-</span><span class="nx">align</span><span class="p">:</span> <span class="nx">center</span><span class="p">;</span>
-						 <span class="nx">font</span><span class="o">-</span><span class="nx">size</span><span class="p">:</span> <span class="mi">24</span><span class="nx">px</span><span class="p">;</span>
-						<span class="si">}</span>
-						<span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
-						</code></pre></div>
-						
-						
-						
-						<p>Great, we’ve just defined the mark up for the homepage, now let’s create a — <code>about.vue</code> — file within the <code>components</code> directory and paste in the following content:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="p">&lt;</span><span class="nt">template</span><span class="p">&gt;</span>
-						  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="p">=</span><span class="s">"about"</span><span class="p">&gt;</span>
-							<span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span>THIS IS THE ABOUT VIEW<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
-						  <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-						<span class="p">&lt;/</span><span class="nt">template</span><span class="p">&gt;</span>
-						<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
-						
-						export default <span class="si">{</span>
-						  <span class="nx">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">about</span><span class="dl">"</span>
-						<span class="si">}</span>;
-						
-						<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-						<span class="p">&lt;</span><span class="nt">style</span> <span class="na">scoped</span><span class="p">&gt;</span>
-						.about <span class="si">{</span>
-						  <span class="nx">width</span><span class="p">:</span> <span class="mi">100</span><span class="o">%</span><span class="p">;</span>
-						  <span class="nl">height</span><span class="p">:</span> <span class="mi">50</span><span class="nx">vh</span><span class="p">;</span>
-						  <span class="nl">background</span><span class="p">:</span> <span class="nx">rgb</span><span class="p">(</span><span class="mi">243</span><span class="p">,</span> <span class="mi">245</span><span class="p">,</span> <span class="mi">145</span><span class="p">);</span>
-						<span class="si">}</span>
-						h2 <span class="si">{</span>
-						  <span class="nx">padding</span><span class="p">:</span> <span class="mi">15</span><span class="nx">px</span> <span class="mi">0</span><span class="nx">px</span> <span class="mi">0</span><span class="nx">px</span> <span class="mi">0</span><span class="nx">px</span><span class="p">;</span>
-						  <span class="nl">margin</span><span class="p">:</span> <span class="mi">0</span><span class="nx">px</span><span class="p">;</span>
-						  <span class="nx">text</span><span class="o">-</span><span class="nx">align</span><span class="p">:</span> <span class="nx">center</span><span class="p">;</span>
-						  <span class="nx">font</span><span class="o">-</span><span class="nx">size</span><span class="p">:</span> <span class="mi">24</span><span class="nx">px</span><span class="p">;</span>
-						<span class="si">}</span>
-						<span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
-						</code></pre></div>
-						
-						
-						
-						<p>We have built both components but for us to see Vue Router’s smooth transitioning in action, we have to use the <code>&lt;router-view/&gt;</code> tag. When this tag is defined, it automatically controls which view is displayed depending on the URL address bar. Where do we put this tag?</p>
-						
-						<p>Let’s open up the parent component — <code>src/App.vue</code> — and edit it so that it has two links for both components and displays the proper view using <code>&lt;router-view/&gt;.</code> Open up the file and paste in the following snippet:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="p">&lt;</span><span class="nt">template</span><span class="p">&gt;</span>
-						  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="p">=</span><span class="s">"app"</span><span class="p">&gt;</span>
-							<span class="p">&lt;</span><span class="nt">nav</span><span class="p">&gt;</span>
-							  <span class="p">&lt;</span><span class="nt">router</span><span class="err">-</span><span class="na">link</span> <span class="na">to</span><span class="p">=</span><span class="s">"/"</span><span class="p">&gt;</span>Home<span class="p">&lt;/</span><span class="nt">router</span><span class="err">-</span><span class="na">link</span><span class="p">&gt;</span>
-							  <span class="p">&lt;</span><span class="nt">router</span><span class="err">-</span><span class="na">link</span> <span class="na">to</span><span class="p">=</span><span class="s">"/about"</span><span class="p">&gt;</span>About<span class="p">&lt;/</span><span class="nt">router</span><span class="err">-</span><span class="na">link</span><span class="p">&gt;</span>
-							<span class="p">&lt;/</span><span class="nt">nav</span><span class="p">&gt;</span>
-							<span class="p">&lt;</span><span class="nt">router</span><span class="err">-</span><span class="na">view</span><span class="p">/&gt;</span>
-						  <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-						<span class="p">&lt;/</span><span class="nt">template</span><span class="p">&gt;</span>
-						<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
-						
-						export default <span class="si">{</span>
-						  <span class="nx">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">app</span><span class="dl">"</span>
-						<span class="si">}</span>;
-						
-						<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-						<span class="p">&lt;</span><span class="nt">style</span><span class="p">&gt;</span>
-						
-						#app <span class="si">{</span>
-						  <span class="nx">max</span><span class="o">-</span><span class="nx">width</span><span class="p">:</span> <span class="mi">896</span><span class="nx">px</span><span class="p">;</span>
-						  <span class="nl">margin</span><span class="p">:</span> <span class="mi">0</span> <span class="nx">auto</span><span class="p">;</span>
-						<span class="si">}</span>
-						
-						nav <span class="si">{</span>
-						  <span class="nx">padding</span><span class="p">:</span> <span class="mi">10</span><span class="nx">px</span><span class="p">;</span>
-						  <span class="nl">border</span><span class="p">:</span> <span class="mi">1</span><span class="nx">px</span> <span class="nx">solid</span> <span class="nx">grey</span><span class="p">;</span>
-						<span class="si">}</span>
-						
-						nav a <span class="si">{</span>
-						  <span class="nx">color</span><span class="p">:</span> <span class="nx">white</span><span class="p">;</span>
-						  <span class="nl">padding</span><span class="p">:</span> <span class="mi">5</span><span class="nx">px</span><span class="p">;</span>
-						  <span class="nl">background</span><span class="p">:</span> <span class="nx">grey</span><span class="p">;</span>
-						  <span class="nx">border</span><span class="o">-</span><span class="nx">radius</span><span class="p">:</span> <span class="mf">3.5</span><span class="nx">px</span><span class="p">;</span>
-						  <span class="nx">text</span><span class="o">-</span><span class="nx">decoration</span><span class="p">:</span> <span class="nx">none</span><span class="p">;</span>
-						<span class="si">}</span>
-						
-						a:first-child <span class="si">{</span>
-						  <span class="nx">margin</span><span class="o">-</span><span class="nx">right</span><span class="p">:</span> <span class="mi">15</span><span class="nx">px</span><span class="p">;</span>
-						<span class="si">}</span>
-						
-						<span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
-						</code></pre></div>
-						
-						
-						
-						<p>Let’s test the application now. Navigate into the <code>src</code> directory using the terminal and serve the application:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="nx">$</span> <span class="nx">cd</span> <span class="nx">src</span>
-						<span class="nx">$</span> <span class="nx">vue</span> <span class="nx">serve</span>
-						</code></pre></div>
-						
-						
-						
-						<p>The last command will start the development server and render the application on the local address — <a href="http://localhost:8080/">http://localhost:8080/</a> — let’s visit it on our browser:</p>
-						
-						<p><a href="https://res.cloudinary.com/practicaldev/image/fetch/s--HFyHYUO7--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_66%2Cw_880/https://paper-attachments.dropbox.com/s_55A7AFCA2D01F19D1DB2C5D7074A21DFD7AC4F153729C79E2C15A8BA81A1C30D_1557624053526_RouterRender.gif" class="article-body-image-wrapper"><img src="https://res.cloudinary.com/practicaldev/image/fetch/s--HFyHYUO7--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_66%2Cw_880/https://paper-attachments.dropbox.com/s_55A7AFCA2D01F19D1DB2C5D7074A21DFD7AC4F153729C79E2C15A8BA81A1C30D_1557624053526_RouterRender.gif" alt="" loading="lazy"></a></p>
-						
-						<p>In the screen recording above, we can see how the application toggles between the home and about pages without causing a reload to the browser’s window. This is the power of a router in a modern web framework. Let’s look at some other functions and features of Vue Router.</p>
-						
-						<h3>
-						  <a name="switching-to-history-mode" href="#switching-to-history-mode" class="anchor">
-						  </a>
-						  <strong>Switching to history mode</strong>
-						</h3>
-						
-						<p>You’ll notice that there’s a “#” in the URL address bar of the application. This is because, by default, Vue Router uses the URL hash to simulate a full URL so that the page won’t be reloaded when the URL changes. We can toggle the mode and change it to history mode which leverages the <code>history.pushState</code> API to achieve URL navigation without a page reload.</p>
-						
-						<p>Let’s switch to history mode by updating the code in the <code>src/main.js</code> file:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="k">import</span> <span class="nx">Vue</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">vue</span><span class="dl">'</span>
-						<span class="k">import</span> <span class="nx">App</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./App.vue</span><span class="dl">'</span>
-						<span class="k">import</span> <span class="nx">VueRouter</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">vue-router</span><span class="dl">'</span>
-						<span class="k">import</span> <span class="nx">routes</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./routes</span><span class="dl">'</span>
-						
-						<span class="nx">Vue</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">VueRouter</span><span class="p">)</span>
-						<span class="kd">const</span> <span class="nx">router</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">VueRouter</span><span class="p">({</span>
-						  <span class="na">mode</span><span class="p">:</span> <span class="dl">'</span><span class="s1">history</span><span class="dl">'</span><span class="p">,</span> <span class="c1">// add this</span>
-						  <span class="nx">routes</span>
-						<span class="p">})</span>
-						
-						<span class="nx">Vue</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">productionTip</span> <span class="o">=</span> <span class="kc">false</span>
-						<span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
-						  <span class="na">render</span><span class="p">:</span> <span class="nx">h</span> <span class="o">=&gt;</span> <span class="nx">h</span><span class="p">(</span><span class="nx">App</span><span class="p">),</span>
-						  <span class="nx">router</span>
-						<span class="p">}).</span><span class="nx">$mount</span><span class="p">(</span><span class="dl">'</span><span class="s1">#app</span><span class="dl">'</span><span class="p">)</span>
-						</code></pre></div>
-						
-						
-						
-						<p>Great, now let’s head over to the web browser and we can see that the “#” is gone and history mode is activated:</p>
-						
-						<p><a href="https://res.cloudinary.com/practicaldev/image/fetch/s--0Pd2Kx-f--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_66%2Cw_880/https://paper-attachments.dropbox.com/s_55A7AFCA2D01F19D1DB2C5D7074A21DFD7AC4F153729C79E2C15A8BA81A1C30D_1557628250951_Render2.gif" class="article-body-image-wrapper"><img src="https://res.cloudinary.com/practicaldev/image/fetch/s--0Pd2Kx-f--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_66%2Cw_880/https://paper-attachments.dropbox.com/s_55A7AFCA2D01F19D1DB2C5D7074A21DFD7AC4F153729C79E2C15A8BA81A1C30D_1557628250951_Render2.gif" alt="" loading="lazy"></a></p>
-						
-						<p>We’ve barely explored the functions and features of Vue Router but here are a few other features for the curious:</p>
-						
-						<ol>
-						<li>
-						<a href="https://router.vuejs.org/guide/essentials/dynamic-matching.html">Dynamic</a> <a href="https://router.vuejs.org/guide/essentials/dynamic-matching.html">r</a><a href="https://router.vuejs.org/guide/essentials/dynamic-matching.html">outing</a>
-						</li>
-						<li>
-						<a href="https://router.vuejs.org/guide/essentials/nested-routes.html">Nested</a> <a href="https://router.vuejs.org/guide/essentials/nested-routes.html">r</a><a href="https://router.vuejs.org/guide/essentials/nested-routes.html">outes</a>
-						</li>
-						<li><a href="https://router.vuejs.org/api/#router-view-props">Props</a></li>
-						<li><a href="https://router.vuejs.org/guide/advanced/navigation-guards.html#global-before-guards">Route guards</a></li>
-						<li>
-						<a href="https://router.vuejs.org/api/#exact-active-class">Keeping components alive</a> etc</li>
-						</ol>
-						
-						<p>Let’s take a look at some alternatives to Vue Router in the next section.</p>
-						
-						<h2>
-						  <a name="alternative-router-options-for-vue" href="#alternative-router-options-for-vue" class="anchor">
-						  </a>
-						  Alternative router options for Vue
-						</h2>
-						
-						<p>Sometimes, you might want to use a different router for your Vue application. When that is the case, here are a few alternatives worth considering:</p>
-						
-						<h2>
-						  <a name="voie" href="#voie" class="anchor">
-						  </a>
-						  Voie
-						</h2>
-						
-						<p>Voie, as defined on the official npm <a href="https://www.npmjs.com/package/voie">page</a>, is a simple router for building robust SPAs in <a href="http://vuejs.org/">Vue</a>. Unlike Vue Router which is organized around URLs, Voie is organized around <em>states</em>. Voie-based apps are basically <a href="https://en.wikipedia.org/wiki/Finite-state_machine">finite-state machines</a> — the state is simply a <em>named</em> logical “place” within your application.</p>
-						
-						<p>Each state can <em>optionally</em> have a:</p>
-						
-						<ul>
-						<li>URL pattern</li>
-						<li>Vue component</li>
-						<li>Enter hook to populate state with data</li>
-						<li>Leave hook to clean up things</li>
-						</ul>
-						
-						<p>States are organized into hierarchies: child states will inherit parameters and data from the parent state. If the child state has a component, it will be rendered at the location specified by the parent (or nearest ancestor) state denoted by <code>&lt;v-view&gt;</code> directive.</p>
-						
-						<p>Let’s take a look at this example:</p>
-						
-						<blockquote>
-						<p>Note: Voie is still undergoing active development so issues reported issues will be fixed as the development progresses.</p>
-						</blockquote>
-						
-						<h3>
-						  <a name="installation" href="#installation" class="anchor">
-						  </a>
-						  <strong>Installation</strong>
-						</h3>
-						
-						<p>Voie can be installed with npm using the following command:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code> <span class="nx">npm</span> <span class="nx">i</span> <span class="o">--</span><span class="nx">save</span> <span class="nx">voie</span>
-						</code></pre></div>
-						
-						
-						
-						<h3>
-						  <a name="usage-and-syntax" href="#usage-and-syntax" class="anchor">
-						  </a>
-						  <strong>Usage and syntax</strong>
-						</h3>
-						
-						<p>Let’s take a look at this example:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="nx">app</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="dl">'</span><span class="s1">user</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
-						 <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/user/:userId</span><span class="dl">'</span><span class="p">,</span>
-						 <span class="na">redirect</span><span class="p">:</span> <span class="dl">'</span><span class="s1">user.dashboard</span><span class="dl">'</span><span class="p">,</span>   <span class="c1">// specify "default" sub-state</span>
-						 <span class="na">enter</span><span class="p">:</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>             <span class="c1">// can return a Promise</span>
-						   <span class="k">return</span> <span class="nx">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">/user/</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">userId</span><span class="p">)</span>
-							 <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
-							 <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">user</span> <span class="o">=</span> <span class="nx">data</span><span class="p">);</span>
-						 <span class="p">},</span>
-						 <span class="na">component</span><span class="p">:</span> <span class="p">{</span>
-						   <span class="na">template</span><span class="p">:</span> <span class="dl">'</span><span class="s1">&lt;div class="user-layout"&gt;&lt;v-view&gt;&lt;/v-view&gt;&lt;/div&gt;</span><span class="dl">'</span>
-						 <span class="p">}</span>
+					  
+					  <p>React is a free and open-source front-end JavaScript library for UI components, maintained by Facebook and a group of individual developers. However it's used, React is only concerned with state management and rendering that state to the DOM, initially through React state and lifecycle methods.</p>
+					  
+					  <p>But that all changed when React 16.8 was introduced, its new addition of Hooks allow the use of state and other React features without writing a class. Hooks were developed to solve a bunch of unconnected problems in React. Some of the problems (are not limited too) include:</p>
+					  
+					  <ol>
+					  <li><p><a href="https://reactjs.org/docs/hooks-intro.html#its-hard-to-reuse-stateful-logic-between-components">It’s hard to reuse stateful logic between components</a></p></li>
+					  <li><p><a href="https://reactjs.org/docs/hooks-intro.html#complex-components-become-hard-to-understand">Complex components become hard to understand</a></p></li>
+					  <li><p><a href="https://reactjs.org/docs/hooks-intro.html#classes-confuse-both-people-and-machines">Classes confuse both people and machines</a></p></li>
+					  </ol>
+					  
+					  <h2>
+						<a name="what-are-hooks" href="#what-are-hooks">
+						</a>
+						What are Hooks? <a name="2"></a>
+					  </h2>
+					  
+					  <p>Hooks are simply just functions that let you “hook into” React state and lifecycle features. Unlike lifecycle methods, Hooks don’t work inside classes. Which can make working with them super flexible, since they let you use lifecycle features in function components. While React provides a few built-in Hooks like useState, you can also create your own Hooks to reuse stateful behavior between components. </p>
+					  
+					  <h2>
+						<a name="usestate" href="#usestate">
+						</a>
+						useState <a name="3"></a>
+					  </h2>
+					  
+					  <p><em>This example was taken from and can be seen in the <a href="https://reactjs.org/docs">React Documentation</a> for Hooks.</em></p>
+					  
+					  <p>If you are familiar with React, then you may use to seeing state handled like so:<br>
+					  </p>
+					  
+					  <div class="highlight js-code-highlight">
+					  <pre class="highlight javascript"><code><span class="kd">class</span> <span class="nx">Example</span> <span class="kd">extends</span> <span class="nx">React</span><span class="p">.</span><span class="nx">Component</span> <span class="p">{</span>
+						<span class="kd">constructor</span><span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="p">{</span>
+						  <span class="k">super</span><span class="p">(</span><span class="nx">props</span><span class="p">);</span>
+						  <span class="k">this</span><span class="p">.</span><span class="nx">state</span> <span class="o">=</span> <span class="p">{</span>
+							<span class="na">count</span><span class="p">:</span> <span class="mi">0</span>
+						  <span class="p">};</span>
+						<span class="p">}</span>
+					  
+						<span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+						  <span class="k">return</span> <span class="p">(</span>
+							<span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+							  <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">You</span> <span class="nx">clicked</span> <span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">count</span><span class="p">}</span> <span class="nx">times</span><span class="o">&lt;</span><span class="sr">/p</span><span class="err">&gt;
+					  </span>        <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">({</span> <span class="na">count</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">count</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">})}</span><span class="o">&gt;</span>
+								<span class="nx">Click</span> <span class="nx">me</span>
+							  <span class="o">&lt;</span><span class="sr">/button</span><span class="err">&gt;
+					  </span>      <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+					  </span>    <span class="p">);</span>
+						<span class="p">}</span>
+					  <span class="p">}</span>
+					  </code></pre>
+					  <div class="highlight__panel js-actions-panel">
+					  <div class="highlight__panel-action js-fullscreen-code-action">
+						  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+						  <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+					  </svg>
+					  
+						  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+						  <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+					  </svg>
+					  
+					  </div>
+					  </div>
+					  </div>
+					  
+					  
+					  
+					  <p>But with React Hooks, that turns into this:<br>
+					  </p>
+					  
+					  <div class="highlight js-code-highlight">
+					  <pre class="highlight javascript"><code><span class="c1">// This example renders a counter. When you click the button, it increments the value:</span>
+					  <span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useState</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+					  
+					  <span class="kd">function</span> <span class="nx">Example</span><span class="p">()</span> <span class="p">{</span>
+						<span class="c1">// Declare a new state variable, which we'll call "count"</span>
+						<span class="kd">const</span> <span class="p">[</span><span class="nx">count</span><span class="p">,</span> <span class="nx">setCount</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+					  
+						<span class="k">return</span> <span class="p">(</span>
+						  <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+							<span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">You</span> <span class="nx">clicked</span> <span class="p">{</span><span class="nx">count</span><span class="p">}</span> <span class="nx">times</span><span class="o">&lt;</span><span class="sr">/p</span><span class="err">&gt;
+					  </span>      <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="o">=&gt;</span> <span class="nx">setCount</span><span class="p">(</span><span class="nx">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)}</span><span class="o">&gt;</span>
+							  <span class="nx">Click</span> <span class="nx">me</span>
+							<span class="o">&lt;</span><span class="sr">/button</span><span class="err">&gt;
+					  </span>    <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+					  </span>  <span class="p">);</span>
+					  <span class="p">}</span>
+					  </code></pre>
+					  <div class="highlight__panel js-actions-panel">
+					  <div class="highlight__panel-action js-fullscreen-code-action">
+						  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+						  <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+					  </svg>
+					  
+						  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+						  <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+					  </svg>
+					  
+					  </div>
+					  </div>
+					  </div>
+					  
+					  
+					  
+					  <p>The first Hook we'll be examining, is the State Hook. <strong>useState</strong> is a Hook called inside a function component to add local state. Once added, React uses the Hook to preserve this state between re-renders by returning two things: the current state value and a function for updating it. This function can be called from anywhere, such as an event handler. If you familiar with React, compare it to this.setState in a class, without merging the old and updated state together.</p>
+					  
+					  <p>"useState" only takes in one initial argument, which is only used during the first render. In the previous example, this argument is "0" because the counter starts from zero. <em>Keep in mind that unlike this.state, the state here doesn’t have to be an object.</em> </p>
+					  
+					  <p>You can understand out how to declare multiple variables with the "useState" hook <a href="https://reactjs.org/docs/hooks-overview.html#declaring-multiple-state-variables">here</a>.</p>
+					  
+					  <h2>
+						<a name="useeffect" href="#useeffect">
+						</a>
+						useEffect <a name="4"></a>
+					  </h2>
+					  
+					  <p>When coding with React, you may perform data fetching, subscriptions, or manually changing the DOM. The React developers like to call these “side effects” since they affect other components, and can’t be done while rendering.</p>
+					  
+					  <p>The Effect Hook, <strong>useEffect</strong>, adds the ability to effect from, <em>you guessed it</em>, a function component. Similar to componentDidMount, componentDidUpdate, and componentWillUnmount in React classes, "useEffect" is unified into a single API. </p>
+					  
+					  <p>Going off the example before, after React updates the DOM, the component sets the document title:<br>
+					  </p>
+					  
+					  <div class="highlight js-code-highlight">
+					  <pre class="highlight javascript"><code><span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useState</span><span class="p">,</span> <span class="nx">useEffect</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+					  
+					  <span class="kd">function</span> <span class="nx">Example</span><span class="p">()</span> <span class="p">{</span>
+						<span class="kd">const</span> <span class="p">[</span><span class="nx">count</span><span class="p">,</span> <span class="nx">setCount</span><span class="p">]</span> <span class="o">=</span> <span class="nx">useState</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+					  
+						<span class="c1">// Similar to componentDidMount and componentDidUpdate:</span>
+						<span class="nx">useEffect</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+						  <span class="c1">// Update the document title using the browser API</span>
+						  <span class="nb">document</span><span class="p">.</span><span class="nx">title</span> <span class="o">=</span> <span class="s2">`You clicked </span><span class="p">${</span><span class="nx">count</span><span class="p">}</span><span class="s2"> times`</span><span class="p">;</span>
 						<span class="p">});</span>
-						
-						<span class="nx">app</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="dl">'</span><span class="s1">user.dashboard</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
-						 <span class="na">component</span><span class="p">:</span> <span class="p">{</span>
-						   <span class="na">template</span><span class="p">:</span> <span class="dl">'</span><span class="s1">&lt;h1&gt;Hello, {{ user.name }}!&lt;/h1&gt;</span><span class="dl">'</span>
-						 <span class="p">}</span>
-						<span class="p">});</span>
-						</code></pre></div>
-						
-						
-						
-						<p>In the snippet above, visiting <code>/user/123</code> would fetch a user with id <code>123</code> from a server and then render the following markup (assuming the user has the name “Alice”):<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="p">=</span><span class="s">"user-layout"</span><span class="p">&gt;</span>
-						  <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello, Alice!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
-						<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-						</code></pre></div>
-						
-						
-						
-						<blockquote>
-						<p><strong>Note:</strong> <a href="http://vuejs.org/guide/components.html#Fragment_Instance">fragment instances</a> are not supported as components. In other words, make sure all components contain a single top-level element without flow control directives (<code>v-if</code>, <code>v-for</code>, etc.)</p>
-						</blockquote>
-						
-						<h3>
-						  <a name="further-learning" href="#further-learning" class="anchor">
-						  </a>
-						  <strong>Further learning</strong>
-						</h3>
-						
-						<p>Visit the official npm <a href="https://www.npmjs.com/package/voie">page</a> to learn more concepts about other Voie, including:</p>
-						
-						<ul>
-						<li>State manager</li>
-						<li>State definition</li>
-						<li>Running the state manager</li>
-						<li>State hierarchy</li>
-						<li>Navigating states</li>
-						<li>Enter/Leave</li>
-						<li>Before each / after each</li>
-						<li>Redirecting</li>
-						<li>State transitions</li>
-						<li>Parameters</li>
-						<li>History setup</li>
-						</ul>
-						
-						<h2>
-						  <a name="vueroutisan" href="#vueroutisan" class="anchor">
-						  </a>
-						  Vue-routisan
-						</h2>
-						
-						<p>A significant time in Vue’s development curve as a web framework was when Laravel started shipping with a front-end boilerplate containing <a href="https://getbootstrap.com/">Bootstrap</a> and <a href="https://vuejs.org/">Vue.</a> This led to the adoption of Vue as the preferred front-end framework of many Laravel developers. That being said, Vue-routisan is a Vue routing system based on the Laravel routing system.</p>
-						
-						<h3>
-						  <a name="installation" href="#installation" class="anchor">
-						  </a>
-						  <strong>Installation</strong>
-						</h3>
-						
-						<p>We can install Vue-routisan with npm using the following command:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="nx">npm</span> <span class="nx">install</span> <span class="nx">vue</span><span class="o">-</span><span class="nx">routisan</span>
-						</code></pre></div>
-						
-						
-						
-						<h3>
-						  <a name="usage-and-syntax" href="#usage-and-syntax" class="anchor">
-						  </a>
-						  <strong>Usage and syntax</strong>
-						</h3>
-						
-						<p>The <code>view()</code> method receives the <code>path</code> and <code>component</code> route options respectively. If you defined the view resolver, you may directly specify the name of the component:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="nx">Route</span><span class="p">.</span><span class="nx">view</span><span class="p">(</span><span class="dl">'</span><span class="s1">/</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Home</span><span class="dl">'</span><span class="p">);</span>
-						</code></pre></div>
-						
-						
-						
-						<p>Without the view resolver, it would be:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="k">import</span> <span class="nx">Home</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./views/Home</span><span class="dl">'</span><span class="p">;</span>
-						
-						<span class="nx">Route</span><span class="p">.</span><span class="nx">view</span><span class="p">(</span><span class="dl">'</span><span class="s1">/</span><span class="dl">'</span><span class="p">,</span> <span class="nx">Home</span><span class="p">);</span>
-						</code></pre></div>
-						
-						
-						
-						<h3>
-						  <a name="what-is-the-view-resolver" href="#what-is-the-view-resolver" class="anchor">
-						  </a>
-						  <strong>What is the view resolver?</strong>
-						</h3>
-						
-						<p>The view resolver allows the <code>view()</code> method to automatically require components for your routes. This saves you from having repetitive <code>import</code>s and <code>require</code>s when defining routes. The view resolver is optional. If you choose to not configure it, you can <code>import</code> a component and pass it directly as the 2nd parameter of the <code>view()</code> method:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="k">import</span> <span class="nx">Route</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">vue-routisan</span><span class="dl">'</span><span class="p">;</span>
-						
-						<span class="nx">Route</span><span class="p">.</span><span class="nx">setViewResolver</span><span class="p">((</span><span class="nx">component</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-							<span class="k">return</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./views/</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">component</span><span class="p">).</span><span class="k">default</span><span class="p">;</span>
-						<span class="p">});</span>
-						</code></pre></div>
-						
-						
-						
-						<h3>
-						  <a name="named-routes" href="#named-routes" class="anchor">
-						  </a>
-						  <strong>Named routes</strong>
-						</h3>
-						
-						<p>The <code>name()</code> method sets the <code>name</code> option on the <em>route instance:</em><br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="nx">Route</span><span class="p">.</span><span class="nx">view</span><span class="p">(</span><span class="dl">'</span><span class="s1">/user/profile</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Profile</span><span class="dl">'</span><span class="p">).</span><span class="nx">name</span><span class="p">(</span><span class="dl">'</span><span class="s1">profile</span><span class="dl">'</span><span class="p">);</span>
-						</code></pre></div>
-						
-						
-						
-						<h3>
-						  <a name="nested-routes" href="#nested-routes" class="anchor">
-						  </a>
-						  <strong>Nested routes</strong>
-						</h3>
-						
-						<p>The <code>children()</code> method sets the <code>children</code> option on the <em>route instance:</em><br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="nx">Route</span><span class="p">.</span><span class="nx">view</span><span class="p">(</span><span class="dl">'</span><span class="s1">/user</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">User</span><span class="dl">'</span><span class="p">).</span><span class="nx">children</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-							<span class="nx">Route</span><span class="p">.</span><span class="nx">view</span><span class="p">(</span><span class="dl">''</span><span class="p">,</span> <span class="dl">'</span><span class="s1">UserList</span><span class="dl">'</span><span class="p">);</span>
-							<span class="nx">Route</span><span class="p">.</span><span class="nx">view</span><span class="p">(</span><span class="dl">'</span><span class="s1">:id</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">UserDetails</span><span class="dl">'</span><span class="p">);</span>
-							<span class="nx">Route</span><span class="p">.</span><span class="nx">view</span><span class="p">(</span><span class="dl">'</span><span class="s1">:id/edit</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">UserEdit</span><span class="dl">'</span><span class="p">);</span>
-						<span class="p">});</span>
-						</code></pre></div>
-						
-						
-						
-						<h3>
-						  <a name="further-learning" href="#further-learning" class="anchor">
-						  </a>
-						  <strong>Further learning</strong>
-						</h3>
-						
-						<p>Visit the official npm <a href="https://www.npmjs.com/package/vue-routisan">page</a> to learn about other Vue-routisan concepts including:</p>
-						
-						<ul>
-						<li>Route groups</li>
-						<li>Route Prefixes</li>
-						<li>Automatically formatted paths</li>
-						<li>Retrieving all routes</li>
-						<li>Navigation guards</li>
-						<li>Redirection routes</li>
-						</ul>
-						
-						<h2>
-						  <a name="vueroute" href="#vueroute" class="anchor">
-						  </a>
-						  Vue-route
-						</h2>
-						
-						<p>Vue-route is a routing directive for Vue.js inspired by <code>ng-view.</code> It allows you to declare your routes on the <code>$root</code> Vue object:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="kd">var</span> <span class="nx">root</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Vue</span><span class="p">({</span>
-							<span class="na">el</span><span class="p">:</span> <span class="dl">'</span><span class="s1">body</span><span class="dl">'</span><span class="p">,</span>
-						
-							<span class="na">routes</span><span class="p">:</span> <span class="p">{</span>
-								<span class="dl">'</span><span class="s1">/home</span><span class="dl">'</span><span class="p">:</span> <span class="p">{</span>
-									<span class="na">componentId</span><span class="p">:</span> <span class="dl">'</span><span class="s1">fg-home</span><span class="dl">'</span><span class="p">,</span>
-									<span class="na">isDefault</span><span class="p">:</span> <span class="kc">true</span>
-								<span class="p">},</span>
-								<span class="dl">'</span><span class="s1">/items/:item</span><span class="dl">'</span><span class="p">:</span> <span class="p">{</span>
-									<span class="na">componentId</span><span class="p">:</span> <span class="dl">'</span><span class="s1">fg-item</span><span class="dl">'</span><span class="p">,</span>
-									<span class="na">afterUpdate</span><span class="p">:</span> <span class="dl">'</span><span class="s1">updateHeader</span><span class="dl">'</span><span class="p">,</span>
-									<span class="na">data</span><span class="p">:</span> <span class="p">{</span>
-										<span class="na">defaultColor</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#3453DD</span><span class="dl">'</span>
-									<span class="p">}</span>
-								<span class="p">},</span>
-								<span class="na">options</span><span class="p">:</span> <span class="p">{</span>
-									<span class="na">hashbang</span><span class="p">:</span> <span class="kc">true</span>
-								<span class="p">}</span>
-							<span class="p">}</span>
-						<span class="p">});</span>
-						</code></pre></div>
-						
-						
-						
-						<p>Then you can reference it with minimal markup:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
-							<span class="p">&lt;</span><span class="nt">div</span> <span class="na">v</span><span class="err">-</span><span class="na">route</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-						<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
-						</code></pre></div>
-						
-						
-						
-						<h3>
-						  <a name="installation-and-configuration" href="#installation-and-configuration" class="anchor">
-						  </a>
-						  <strong>Installation and configuration</strong>
-						</h3>
-						
-						<ul>
-						<li>We can install Vue-route with npm using the following command:
-						</li>
-						</ul>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="nx">npm</span> <span class="nx">i</span> <span class="nx">vue</span><span class="o">-</span><span class="nx">route</span> <span class="o">--</span><span class="nx">save</span>
-						</code></pre></div>
-						
-						
-						
-						<ul>
-						<li>Require and install the plugin:
-						</li>
-						</ul>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="kd">var</span> <span class="nx">Vue</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">vue</span><span class="dl">'</span><span class="p">),</span>
-							<span class="nx">route</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">vue-route</span><span class="dl">'</span><span class="p">);</span>
-						
-						<span class="nx">Vue</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">route</span><span class="p">);</span>
-						</code></pre></div>
-						
-						
-						
-						<ul>
-						<li>Put the <code>&lt;div v-route&gt;&lt;/div&gt;</code> in your main template.</li>
-						<li>Pass your routes to the <code>$root</code> VM of your app.</li>
-						</ul>
-						
-						<h2>
-						  <a name="transition-keepalive-and-other-directives" href="#transition-keepalive-and-other-directives" class="anchor">
-						  </a>
-						  Transition, keep-alive and other directives
-						</h2>
-						
-						<p>If you want to add custom transitions between your pages, it’s recommended to put them on each page’s component template. Putting anything on the <code>v-route</code> element itself will only be active if you change this element (for instance with a <code>v-if</code> directive). Following the example, that would be:<br>
-						</p>
-						
-						<div class="highlight"><pre class="highlight jsx"><code><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="p">=</span><span class="s">"Home"</span> <span class="na">v</span><span class="err">-</span><span class="na">transition</span><span class="p">=</span><span class="s">"homeTransition"</span><span class="p">&gt;</span>...<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
-						</code></pre></div>
-						
-						
-						
-						<h3>
-						  <a name="further-learning" href="#further-learning" class="anchor">
-						  </a>
-						  <strong>Further learning</strong>
-						</h3>
-						
-						<p>Visit the official npm <a href="https://www.npmjs.com/package/vue-route">page</a> to learn about other Vue-route concepts including:</p>
-						
-						<ul>
-						<li>Location concept</li>
-						<li>Route parameters</li>
-						<li>Subroutes</li>
-						</ul>
-						
-						<h2>
-						  <a name="conclusion" href="#conclusion" class="anchor">
-						  </a>
-						  Conclusion
-						</h2>
-						
-						<p>In this article, we learned some of the differences between client-side and server-side rendered applications. We also saw some advantages of client-side routing and how it can augment the performance of our web applications.</p>
-						
-						<p>We further went on to learn about Vue and Vue Router (the official router for Vue) in addition to alternatives to Vue Router. If you’ve been looking to explore an alternative to Vue Router, you should try getting acquainted with one of the options listed above.</p>
-						
-						
+					  
+						<span class="k">return</span> <span class="p">(</span>
+						  <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+							<span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">You</span> <span class="nx">clicked</span> <span class="p">{</span><span class="nx">count</span><span class="p">}</span> <span class="nx">times</span><span class="o">&lt;</span><span class="sr">/p</span><span class="err">&gt;
+					  </span>      <span class="o">&lt;</span><span class="nx">button</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{()</span> <span class="o">=&gt;</span> <span class="nx">setCount</span><span class="p">(</span><span class="nx">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)}</span><span class="o">&gt;</span>
+							  <span class="nx">Click</span> <span class="nx">me</span>
+							<span class="o">&lt;</span><span class="sr">/button</span><span class="err">&gt;
+					  </span>    <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+					  </span>  <span class="p">);</span>
+					  <span class="p">}</span>
+					  </code></pre>
+					  <div class="highlight__panel js-actions-panel">
+					  <div class="highlight__panel-action js-fullscreen-code-action">
+						  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
+						  <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
+					  </svg>
+					  
+						  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
+						  <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
+					  </svg>
+					  
+					  </div>
+					  </div>
+					  </div>
+					  
+					  
+					  
+					  <p>By calling "useEffect", you’re telling React to run the “effect” function you created after pushing changes to the DOM. Effects are declared inside the component, so they have access to props and state. By default, React runs the effects after every render, starting with the first one. Effects can also optionally specify actions to take after by returning a function. Hooks let you organize side effects in a component by what ideas are related, rather than forcing a split based on lifecycle methods.</p>
+					  
+					  <p>Unlike the lifecycle methods, componentDidMount or componentDidUpdate, effects scheduled with useEffect don’t block the browser from updating the screen. This cut back on processing time, since the majority of effects don’t need to happen synchronously, making your app feel more responsive. In a case where effects do need to occur synchronously(such as measuring the layout), there is a separate useLayoutEffect Hook with an API identical to useEffect. You can learn more about that in the <a href="#7">Additional Hooks and API Reference</a> section.</p>
+					  
+					  <h2>
+						<a name="rules-of-hooks" href="#rules-of-hooks">
+						</a>
+						Rules of Hooks <a name="5"></a>
+					  </h2>
+					  
+					  <p>Despite Hooks being Javascript functions, there are still several rules they must follow in order to maintain the black magic that gives them lifecycle features. </p>
+					  
+					  <ol>
+					  <li>
+					  <p><strong>Only Call Hooks at the Top Level</strong></p>
+					  
+					  <ul>
+					  <li> Always use Hooks at the top level of your React function, before any early returns. This means don’t call Hooks inside loops, conditions, or nested functions. This ensures that Hooks are called in the same order each time a component renders, which allows React to correctly preserve the state of Hooks between varying useState and useEffect calls.</li>
+					  </ul>
+					  </li>
+					  <li>
+					  <p><strong>Only Call Hooks from React Functions</strong></p>
+					  
+					  <ul>
+					  <li>Don’t call Hooks from regular JavaScript functions. 
+					  Try the following instead:
+					  
+					  <ul>
+					  <li>Call Hooks from custom Hooks </li>
+					  <li>Call Hooks from React function components.</li>
+					  </ul>
+					  </li>
+					  </ul>
+					  </li>
+					  </ol>
+					  
+					  <p><em>To make things easy, the React developers made this <a href="https://www.npmjs.com/package/eslint-plugin-react-hooks">plugin</a> that automatically enforces these rules. But, that doesn't mean you should skip over knowing proper Hook etiquette.</em></p>
+					  
+					  <h2>
+						<a name="building-your-own-hooks" href="#building-your-own-hooks">
+						</a>
+						Building your own Hooks <a name="6"></a>
+					  </h2>
+					  
+					  <p>What if you want to go beyond just the Effect Hook? Well, there's an answer for that, build your own! By building your own Hooks, you can extract component logic into reusable functions. You may be use to doing this in React through: render props and higher-order components. But with the addition of Hooks, you can solve many of the same problems without adding more components to the tree. <em>No one likes cluttered code!</em></p>
+					  
+					  <p><em>Think about how share logic between two JavaScript functions, you extract it into yet another function. And since components and Hooks are functions, this works for them too!</em></p>
+					  
+					  <p><strong>A custom Hook is a JavaScript function whose name starts with ”use” and has the ability to call other Hooks.</strong> </p>
+					  
+					  <p>You can write custom Hooks that cover a variety of cases such as form handling, animation, timers, and much more. Don't be afraid to experiment with creating your own Hooks, because you might find yourself making a meaningful contribution to others down the line. <em>React even provides <a href="https://reactjs.org/docs/how-to-contribute.html">documentation</a> on how to contribute to the open source project.</em></p>
+					  
+					  <p>For more information about building your own custom Hooks and some examples, see the <a href="https://reactjs.org/docs/hooks-custom.html">React Documentation</a> for creating custom Hooks. </p>
+					  
+					  <p>As an additional resource, here is another recent blog post that further explains how to build your own Hooks, and supplies you with some great examples such as a "useFetch" custom hook. Check it out <a href="https://alterclass.io/blog/5-react-custom-hooks-you-should-start-using-explained">here</a>!</p>
+					  
+					  <h2>
+						<a name="additional-hooks-and-api-reference" href="#additional-hooks-and-api-reference">
+						</a>
+						Additional Hooks and API Reference <a name="7"></a>
+					  </h2>
+					  
+					  <p>If you're interested in learning about the Hooks API reference, the React documentation provides a reader friendly explanation for the <a href="https://reactjs.org/docs/hooks-reference.html#basic-hooks">basic hooks</a>:</p>
+					  
+					  <ul>
+					  <li><a href="https://reactjs.org/docs/hooks-reference.html#usestate">useState</a></li>
+					  <li><a href="https://reactjs.org/docs/hooks-reference.html#useeffect">useEffect</a></li>
+					  <li><a href="https://reactjs.org/docs/hooks-reference.html#usecontext">useContext</a></li>
+					  </ul>
+					  
+					  <p>You can also use <a href="https://reactjs.org/docs/hooks-reference.html#additional-hooks">additional Hooks</a> which are either variants of the basic ones, or only needed for specific edge cases. While helpful, they are just additions, so don't worry about learning them right away. These Hooks include:</p>
+					  
+					  <ul>
+					  <li><a href="https://reactjs.org/docs/hooks-reference.html#usereducer">useReducer</a></li>
+					  <li><a href="https://reactjs.org/docs/hooks-reference.html#usecallback">useCallback</a></li>
+					  <li><a href="https://reactjs.org/docs/hooks-reference.html#usememo">useMemo</a></li>
+					  <li><a href="https://reactjs.org/docs/hooks-reference.html#useref">useRef</a></li>
+					  <li><a href="https://reactjs.org/docs/hooks-reference.html#useimperativehandle">useImperativeHandle</a></li>
+					  <li><a href="https://reactjs.org/docs/hooks-reference.html#uselayouteffect">useLayoutEffect</a></li>
+					  <li><a href="https://reactjs.org/docs/hooks-reference.html#usedebugvalue">useDebugValue</a></li>
+					  </ul>
+					  
+					  <h2>
+						<a name="conclusion" href="#conclusion">
+						</a>
+						Conclusion <a name="8"></a>
+					  </h2>
+					  
+					  <p>React is constantly changing, and programmers who are focused on developing products may not have the time to learn and use every new API released. Hooks are still fairly new, so while they may come in handy, there's no rush to adopt them into your every day practices, <em>unless that's what your heart desires</em>. </p>
+					  
+					  <p>Hooks were made to work side-by-side with existing code, which allows you to adopt them gradually, <em>meaning there is no rush to migrate to Hooks.</em> Do not feel the need to do some “big rewrite”, especially for existing, complex class components. It's a bit of a learning curve to start “thinking in Hooks”. So practice using Hooks in your <em>unimportant</em> work first, and once you, <em>and anyone you're working with</em>, feel comfortable with them, give them a go! </p>
+					  
+					  <p>Hooks were made in hopes to one day cover all existing use cases for classes, but don't worry because class components aren't going anywhere soon. If you don't believe me, I'll quote the React developers themselves, </p>
+					  
+					  <blockquote>
+					  <p>"At Facebook, we have tens of thousands of components written as classes, and we have absolutely no plans to rewrite them. Instead, we are starting to use Hooks in the new code side by side with classes."</p>
+					  </blockquote>
+					  
+					  <p>Hopefully this article has inspired you to hook into your full React potential, or maybe you decided to not bother learning and using <em>yet another</em> API. Either way, let me know your opinion about Hooks, and where you see them going in the future. ✨ Happy Hooking! ✨</p>
+						  
 						<hr>
 						
 						<h2>

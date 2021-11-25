@@ -299,316 +299,1151 @@
                   <div class="categories">
                     <a class="category-name" href="../category/web-design/index.html">Frontend</a>
                   </div>
-                  <h1 class="post-title">How to unit test Vuex modules defined with the vuex-module-decorators syntax in Nuxt, using vue-test-utils and Jest?</h1>
-                  <span class="post-date">Sep 28, 2021</span>
+                  <h1 class="post-title">Build Angular Like An Architect</h1>
+                  <span class="post-date">Apr 3, 2019</span>
                 </div>
                 <div class="post-content col-md-10 offset-md-1">
                   
-<h1>
-	<a name="the-problem" href="#the-problem">
-	</a>
-	The problem
-  </h1>
-  
-  <p>To find the answer to my question I went through the official Nuxt documentation and through the existing Stack Overflow and Github issue discussions.</p>
-  
-  <p>But with no luck. </p>
-  
-  <p>My AuthModule looks something like this:<br>
-  </p>
-  
-  <div class="highlight js-code-highlight">
-  <pre class="highlight typescript"><code><span class="p">@</span><span class="nd">Module</span><span class="p">({</span>
-	<span class="na">stateFactory</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-	<span class="na">namespaced</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-  <span class="p">})</span>
-  <span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">AuthModule</span> <span class="kd">extends</span> <span class="nx">VuexModule</span> <span class="p">{</span>
-	<span class="nl">userData</span><span class="p">?:</span> <span class="nx">UserData</span> <span class="o">|</span> <span class="kc">undefined</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
-	<span class="nl">prevRouteList</span><span class="p">:</span> <span class="nx">Routes</span><span class="p">[]</span> <span class="o">=</span> <span class="p">[];</span>
-	<span class="nl">error</span><span class="p">?:</span> <span class="nx">services</span><span class="p">.</span><span class="nx">ICognitoError</span> <span class="o">|</span> <span class="kc">undefined</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
-	<span class="nx">isLoading</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-	<span class="p">...</span>
-  
-	<span class="p">@</span><span class="nd">VuexMutation</span>
-	<span class="nx">setIsLoading</span><span class="p">(</span><span class="nx">isLoading</span><span class="p">:</span> <span class="nx">boolean</span><span class="p">)</span> <span class="p">{</span>
-	  <span class="k">this</span><span class="p">.</span><span class="nx">isLoading</span> <span class="o">=</span> <span class="nx">isLoading</span><span class="p">;</span>
-	<span class="p">}</span>
-  
-	<span class="p">...</span>
-  
-	 <span class="p">@</span><span class="nd">VuexAction</span><span class="p">({</span> <span class="na">rawError</span><span class="p">:</span> <span class="kc">true</span> <span class="p">})</span>
-	<span class="k">async</span> <span class="nx">register</span><span class="p">(</span><span class="nx">registerData</span><span class="p">:</span> <span class="p">{</span> <span class="nl">email</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span> <span class="nl">password</span><span class="p">:</span> <span class="kr">string</span> <span class="p">}):</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="kr">any</span><span class="o">&gt;</span> <span class="p">{</span>
-	  <span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">commit</span><span class="p">(</span><span class="dl">'</span><span class="s1">setIsLoading</span><span class="dl">'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
-	  <span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">commit</span><span class="p">(</span><span class="dl">'</span><span class="s1">setError</span><span class="dl">'</span><span class="p">,</span> <span class="kc">undefined</span><span class="p">);</span>
-	  <span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">commit</span><span class="p">(</span><span class="dl">'</span><span class="s1">setInitiateRegistration</span><span class="dl">'</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
-	  <span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">(</span><span class="dl">'</span><span class="s1">setEmail</span><span class="dl">'</span><span class="p">,</span> <span class="nx">registerData</span><span class="p">.</span><span class="nx">email</span><span class="p">);</span>
-  
-	  <span class="k">try</span> <span class="p">{</span>
-		<span class="kd">const</span> <span class="p">{</span> <span class="nx">user</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">services</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="nx">registerData</span><span class="p">.</span><span class="nx">email</span><span class="p">,</span> <span class="nx">registerData</span><span class="p">.</span><span class="nx">password</span><span class="p">);</span>
-  
-		<span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
-		  <span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">(</span><span class="dl">'</span><span class="s1">pushPrevRoute</span><span class="dl">'</span><span class="p">,</span> <span class="nx">Routes</span><span class="p">.</span><span class="nx">emailVerification</span><span class="p">);</span>
-		  <span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">commit</span><span class="p">(</span><span class="dl">'</span><span class="s1">setInitiateRegistration</span><span class="dl">'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
-		<span class="p">}</span>
-	  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="na">error</span><span class="p">:</span> <span class="kr">any</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">commit</span><span class="p">(</span><span class="dl">'</span><span class="s1">setError</span><span class="dl">'</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
-		<span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">commit</span><span class="p">(</span><span class="dl">'</span><span class="s1">setInitiateRegistration</span><span class="dl">'</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
-	  <span class="p">}</span>
-  
-	  <span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">commit</span><span class="p">(</span><span class="dl">'</span><span class="s1">setIsLoading</span><span class="dl">'</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
-	<span class="p">}</span>
-  
-	<span class="p">...</span>
-  
-	<span class="p">@</span><span class="nd">MutationAction</span>
-	<span class="nx">setEmail</span><span class="p">(</span><span class="nx">email</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span>  <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
-  
-	<span class="p">...</span> 
-  
-	<span class="kd">get</span> <span class="nx">getEmail</span><span class="p">()</span> <span class="p">{</span>
-	  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">email</span><span class="p">;</span>
-	<span class="p">}</span>
-  
-	<span class="p">...</span> 
-  
-  <span class="p">}</span>
-  </code></pre>
-  <div class="highlight__panel js-actions-panel">
-  <div class="highlight__panel-action js-fullscreen-code-action">
-	  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
-	  <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
-  </svg>
-  
-	  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
-	  <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
-  </svg>
-  
-  </div>
-  </div>
-  </div>
-  
-  
-  
-  <h1>
-	<a name="the-solution" href="#the-solution">
-	</a>
-	The solution
-  </h1>
-  
-  <p>After some trial and error I finally discovered the answer to my question. </p>
-  
-  <p>The implementation looks like this:<br>
-  </p>
-  
-  <div class="highlight js-code-highlight">
-  <pre class="highlight typescript"><code><span class="c1">// auth.spec.ts</span>
-  
-  <span class="k">import</span> <span class="nx">Vuex</span><span class="p">,</span> <span class="p">{</span> <span class="nx">Store</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">vuex</span><span class="dl">'</span><span class="p">;</span>
-  <span class="k">import</span> <span class="p">{</span> <span class="nx">createLocalVue</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@vue/test-utils</span><span class="dl">'</span><span class="p">;</span>
-  
-  <span class="k">import</span> <span class="nx">AuthModule</span><span class="p">,</span> <span class="p">{</span> <span class="nx">IState</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./auth</span><span class="dl">'</span><span class="p">;</span>
-  
-  <span class="nx">jest</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="dl">'</span><span class="s1">@/services</span><span class="dl">'</span><span class="p">);</span>
-  
-  <span class="kd">const</span> <span class="nx">localVue</span> <span class="o">=</span> <span class="nx">createLocalVue</span><span class="p">();</span>
-  <span class="nx">localVue</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">Vuex</span><span class="p">);</span>
-  
-  <span class="kd">const</span> <span class="nx">storeOptions</span> <span class="o">=</span> <span class="p">{</span>
-	<span class="na">modules</span><span class="p">:</span> <span class="p">{</span>
-	  <span class="na">auth</span><span class="p">:</span> <span class="nx">AuthModule</span><span class="p">,</span>
-	<span class="p">},</span>
-  <span class="p">};</span>
-  
-  <span class="kd">const</span> <span class="nx">createStore</span> <span class="o">=</span> <span class="p">(</span><span class="nx">storeOptions</span><span class="p">:</span> <span class="kr">any</span> <span class="o">=</span> <span class="p">{}):</span> <span class="nx">Store</span><span class="o">&lt;</span><span class="p">{</span> <span class="na">auth</span><span class="p">:</span> <span class="nx">IState</span> <span class="p">}</span><span class="o">&gt;</span> <span class="o">=&gt;</span> <span class="k">new</span> <span class="nx">Vuex</span><span class="p">.</span><span class="nx">Store</span><span class="p">({</span> <span class="p">...</span><span class="nx">storeOptions</span> <span class="p">});</span>
-  
-  <span class="nx">describe</span><span class="p">(</span><span class="dl">'</span><span class="s1">AuthModule</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-	<span class="kd">let</span> <span class="na">store</span><span class="p">:</span> <span class="nx">Store</span><span class="o">&lt;</span><span class="p">{</span> <span class="na">auth</span><span class="p">:</span> <span class="nx">IState</span> <span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
-  
-	<span class="nx">beforeEach</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-	  <span class="nx">store</span> <span class="o">=</span> <span class="nx">createStore</span><span class="p">(</span><span class="nx">storeOptions</span><span class="p">);</span>
-	<span class="p">});</span>
-  
-	<span class="nx">describe</span><span class="p">(</span><span class="dl">'</span><span class="s1">mutations</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-	  <span class="c1">// ...</span>
-  
-	  <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">auth/setIsLoading</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-		<span class="nx">expect</span><span class="p">(</span><span class="nx">store</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">isLoading</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
-		<span class="nx">store</span><span class="p">.</span><span class="nx">commit</span><span class="p">(</span><span class="dl">'</span><span class="s1">auth/setIsLoading</span><span class="dl">'</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
-		<span class="nx">expect</span><span class="p">(</span><span class="nx">store</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">isLoading</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-	  <span class="p">});</span>
-  
-	  <span class="c1">// ...</span>
-	<span class="p">});</span>
-  
-	<span class="nx">describe</span><span class="p">(</span><span class="dl">'</span><span class="s1">actions</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-	  <span class="c1">// ...</span>
-  
-	  <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">register success</span><span class="dl">'</span><span class="p">,</span> <span class="k">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-		<span class="kd">const</span> <span class="nx">registerData</span> <span class="o">=</span> <span class="p">{</span>
-		  <span class="na">email</span><span class="p">:</span> <span class="dl">'</span><span class="s1">dummy@email.com</span><span class="dl">'</span><span class="p">,</span>
-		  <span class="na">password</span><span class="p">:</span> <span class="dl">'</span><span class="s1">dummy</span><span class="dl">'</span><span class="p">,</span>
-		<span class="p">};</span>
-  
-		<span class="nx">expect</span><span class="p">(</span><span class="nx">store</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">registrationInitiated</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
-  
-		<span class="k">try</span> <span class="p">{</span>
-		  <span class="k">await</span> <span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">(</span><span class="dl">'</span><span class="s1">auth/register</span><span class="dl">'</span><span class="p">,</span> <span class="nx">registerData</span><span class="p">);</span>
-		  <span class="nx">expect</span><span class="p">(</span><span class="nx">store</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">registrationInitiated</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-		<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{}</span>
-	  <span class="p">});</span>
-  
-	  <span class="c1">// ...</span>
-	<span class="p">});</span>
-  
-	<span class="nx">describe</span><span class="p">(</span><span class="dl">'</span><span class="s1">mutation-actions</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-	  <span class="c1">// ...</span>
-  
-	  <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">setEmail</span><span class="dl">'</span><span class="p">,</span> <span class="k">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-		<span class="kd">const</span> <span class="nx">dummyEmail</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">dummy@email.com</span><span class="dl">'</span><span class="p">;</span>
-  
-		<span class="nx">expect</span><span class="p">(</span><span class="nx">store</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">email</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="dl">''</span><span class="p">);</span>
-		<span class="k">await</span> <span class="nx">store</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">(</span><span class="dl">'</span><span class="s1">auth/setEmail</span><span class="dl">'</span><span class="p">,</span> <span class="nx">dummyEmail</span><span class="p">);</span>
-		<span class="nx">expect</span><span class="p">(</span><span class="nx">store</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">email</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">dummyEmail</span><span class="p">);</span>
-	  <span class="p">});</span>
-  
-	  <span class="c1">// ...</span>
-	<span class="p">});</span>
-  
-	<span class="nx">describe</span><span class="p">(</span><span class="dl">'</span><span class="s1">getters</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-	  <span class="c1">// ...</span>
-  
-	  <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">auth/getError</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
-		<span class="nx">expect</span><span class="p">(</span><span class="nx">store</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">error</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
-		<span class="nx">expect</span><span class="p">(</span><span class="nx">store</span><span class="p">.</span><span class="nx">getters</span><span class="p">[</span><span class="dl">'</span><span class="s1">auth/getError</span><span class="dl">'</span><span class="p">]).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
-  
-		<span class="p">(</span><span class="nx">store</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">error</span> <span class="k">as</span> <span class="kr">any</span><span class="p">)</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Demmo error</span><span class="dl">'</span><span class="p">;</span>
-		<span class="nx">expect</span><span class="p">(</span><span class="nx">store</span><span class="p">.</span><span class="nx">getters</span><span class="p">[</span><span class="dl">'</span><span class="s1">auth/getError</span><span class="dl">'</span><span class="p">]).</span><span class="nx">toBe</span><span class="p">(</span><span class="dl">'</span><span class="s1">Demmo error</span><span class="dl">'</span><span class="p">);</span>
-	  <span class="p">});</span>
-  
-	  <span class="c1">// ...</span>
-	<span class="p">});</span>
-  <span class="p">});</span>
-  
-  <span class="c1">// services/auth</span>
-  
-  <span class="k">export</span> <span class="k">async</span> <span class="kd">function</span> <span class="nx">register</span><span class="p">(</span><span class="nx">email</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">password</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">attr</span><span class="p">:</span> <span class="kr">any</span> <span class="o">=</span> <span class="p">{}):</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="kr">any</span><span class="o">&gt;</span> <span class="p">{</span>
-	<span class="k">try</span> <span class="p">{</span>
-	  <span class="k">return</span> <span class="k">await</span> <span class="nx">Auth</span><span class="p">.</span><span class="nx">signUp</span><span class="p">({</span>
-		<span class="na">username</span><span class="p">:</span> <span class="nx">email</span><span class="p">,</span>
-		<span class="nx">password</span><span class="p">,</span>
-		<span class="na">attributes</span><span class="p">:</span> <span class="p">{</span>
-		  <span class="p">...</span><span class="nx">attr</span><span class="p">,</span>
-		<span class="p">},</span>
-	  <span class="p">});</span>
-	<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="na">err</span><span class="p">:</span> <span class="kr">any</span><span class="p">)</span> <span class="p">{</span>
-	  <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">createError</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="dl">'</span><span class="s1">register</span><span class="dl">'</span><span class="p">));</span>
-	<span class="p">}</span>
-  <span class="p">}</span>
-  
-  <span class="c1">// createError is just a util method for formatting the error message and wiring to the correct i18n label</span>
-  
-  <span class="c1">// services/__mock__/auth</span>
-  
-  <span class="k">import</span> <span class="p">{</span> <span class="nx">createError</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../auth</span><span class="dl">'</span><span class="p">;</span>
-  
-  <span class="k">export</span> <span class="kd">const</span> <span class="nx">register</span> <span class="o">=</span> <span class="p">(</span><span class="nx">registerData</span><span class="p">:</span> <span class="p">{</span> <span class="nl">email</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span> <span class="nl">password</span><span class="p">:</span> <span class="kr">string</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
-	<span class="k">try</span> <span class="p">{</span>
-	  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">registerData</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">'</span><span class="s1">dummy error</span><span class="dl">'</span><span class="p">);</span>
-	  <span class="p">}</span>
-  
-	  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">resolve</span><span class="p">({</span> <span class="na">response</span><span class="p">:</span> <span class="p">{</span> <span class="na">user</span><span class="p">:</span> <span class="nx">registerData</span><span class="p">.</span><span class="nx">email</span> <span class="p">}</span> <span class="p">}));</span>
-	<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-	  <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">createError</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="dl">'</span><span class="s1">register</span><span class="dl">'</span><span class="p">));</span>
-	<span class="p">}</span>
-  <span class="p">};</span>
-  
-  </code></pre>
-  <div class="highlight__panel js-actions-panel">
-  <div class="highlight__panel-action js-fullscreen-code-action">
-	  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
-	  <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
-  </svg>
-  
-	  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
-	  <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
-  </svg>
-  
-  </div>
-  </div>
-  </div>
-  
-  
-  
-  <p>The most important thing to realise is that the <a href="https://github.com/championswimmer/vuex-module-decorators">vuex-module-decorators</a> class-based module behaves just like a <a href="https://class-component.vuejs.org/">vue-class-component</a> under the hood.</p>
-  
-  <p>All of the class-based stuff coming from vuex-module-decorators is just syntactic sugar - a wrapper around the vue-class-component API.</p>
-  
-  <p>To quote the <a href="https://championswimmer.in/vuex-module-decorators/pages/getting-started.html#define-a-module">docs</a>:</p>
-  
-  <blockquote>
-  <p>In your store, you use the MyModule class itself as a module...The way we use the MyModule class is different from classical object-oriented programming and similar to how vue-class-component works. We use the class itself as module, not an object constructed by the class</p>
-  </blockquote>
-  
-  <p>Another thing to keep in mind is to use <a href="https://vue-test-utils.vuejs.org/api/createlocalvue.html">createLocalVue</a>, which enables us to use Vue classes, plugins, components etc. without polluting the global Vue class.</p>
-  
-  <p>Adding the Vuex plugin to <code>createLocalVue</code>:<br>
-  </p>
-  
-  <div class="highlight js-code-highlight">
-  <pre class="highlight typescript"><code><span class="nx">localVue</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">Vuex</span><span class="p">);</span>
-  </code></pre>
-  <div class="highlight__panel js-actions-panel">
-  <div class="highlight__panel-action js-fullscreen-code-action">
-	  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
-	  <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
-  </svg>
-  
-	  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
-	  <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
-  </svg>
-  
-  </div>
-  </div>
-  </div>
-  
-  
-  
-  <p>The AuthModule class is declared as a Vuex (namespaced) module inside the Vuex.Store constructor (as per docs).<br>
-  </p>
-  
-  <div class="highlight js-code-highlight">
-  <pre class="highlight typescript"><code><span class="kd">const</span> <span class="nx">storeOptions</span> <span class="o">=</span> <span class="p">{</span>
-	<span class="na">modules</span><span class="p">:</span> <span class="p">{</span>
-	  <span class="na">auth</span><span class="p">:</span> <span class="nx">AuthModule</span><span class="p">,</span>
-	<span class="p">},</span>
-  <span class="p">};</span>
-  
-  <span class="kd">const</span> <span class="nx">createStore</span> <span class="o">=</span> <span class="p">(</span><span class="nx">storeOptions</span><span class="p">:</span> <span class="kr">any</span> <span class="o">=</span> <span class="p">{}):</span> <span class="nx">Store</span><span class="o">&lt;</span><span class="p">{</span> <span class="na">auth</span><span class="p">:</span> <span class="nx">IState</span> <span class="p">}</span><span class="o">&gt;</span> <span class="o">=&gt;</span> <span class="k">new</span> <span class="nx">Vuex</span><span class="p">.</span><span class="nx">Store</span><span class="p">({</span> <span class="p">...</span><span class="nx">storeOptions</span> <span class="p">});</span>
-  </code></pre>
-  <div class="highlight__panel js-actions-panel">
-  <div class="highlight__panel-action js-fullscreen-code-action">
-	  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-on"><title>Enter fullscreen mode</title>
-	  <path d="M16 3h6v6h-2V5h-4V3zM2 3h6v2H4v4H2V3zm18 16v-4h2v6h-6v-2h4zM4 19h4v2H2v-6h2v4z"></path>
-  </svg>
-  
-	  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewbox="0 0 24 24" class="highlight-action crayons-icon highlight-action--fullscreen-off"><title>Exit fullscreen mode</title>
-	  <path d="M18 7h4v2h-6V3h2v4zM8 9H2V7h4V3h2v6zm10 8v4h-2v-6h6v2h-4zM8 15v6H6v-4H2v-2h6z"></path>
-  </svg>
-  
-  </div>
-  </div>
-  </div>
-  
-  
-  
-  <p>In the implementation above, AuthModule (incl. store, actions, mutations, getters...) is re-created inside every test case with the help of the <code>beforeEach</code> hook (to have a clean store in every new iteration).</p>
-  
-  <p>The rest is pretty straightforward. </p>
-  
-  <p>Check out how I tested each part of the AuthModule (actions, mutations, getters..).</p>
-  
-  <p>That's it. Happy unit testing :)</p>
+                  <p>Since Angular 2 was in released I've been experimenting with different ways to build apps. Most developers don't need to worry about how their application is built because @angular/cli makes it so easy. The cli hides all the complexity and for good reason. Engineers need to focus on implementing features and bugfixes. Let's face it. Building complex enterprise applications is difficult. It can be a lot of work to put all the pieces together, let alone make build tooling do things like code split an application.</p>
+
+                  <p>In Build Angular Like An Architect (Part 1) we briefly look at why someone would want to write a custom Angular build and how we got here. We then scaffold a new Builder using the API provided in @angular-devkit/architect package, code the build with RxJS Observables and learn how to extend the @angular/cli with a new production build that bundles Angular with Closure Compiler instead of Webpack.</p>
+                  
+                  <p>You can check out the code <a href="https://github.com/steveblue/architect">in this Github repository</a>.</p>
+                  
+                  <h3>
+                    <a name="how-did-we-get-here" href="#how-did-we-get-here" class="anchor">
+                    </a>
+                    How did we get here?
+                  </h3>
+                  
+                  <p>Ever since the @angular/cli moved to webpack it was hard to integrate with other build tooling and still retain the benefits of the cli. Only a few efforts have been made to extend the cli. <a href="https://nx.dev">nx</a> is one example, going as far to enable faster development in a monorepo, incrementally building only code that has changed. The cli was so tightly coupled with webpack at times it led to awkward customization of webpack itself.</p>
+                  
+                  <p><a href="https://i.giphy.com/media/JGF7ctowtLGak/giphy.gif" class="article-body-image-wrapper"><img src="https://i.giphy.com/media/JGF7ctowtLGak/giphy.gif" alt="eject" loading="lazy"></a></p>
+                  
+                  <p>Prior to Angular 6 you could eject the webpack config with <code>ng eject</code> to customize it.</p>
+                  
+                  <p>With the release of Angular 6 this API was deprecated when a complete rewrite of @angular/cli abstracted portions of the tool. The cli became a wrapper around @angular-devkit. Running a <code>ng</code> command just meant you were triggering "architect" targets that ran "builders". This kind of abstraction makes tools like nx possible.</p>
+                  
+                  <p>The useful bits of the API are as follows:</p>
+                  
+                  <ul>
+                  <li>Builders enable you to code custom builds with TypeScript and RxJS</li>
+                  <li>Architect lets you to define targets that run Builders</li>
+                  <li>Architect CLI provides a way to test builders in a workspace</li>
+                  </ul>
+                  
+                  <p>Advanced users could customize a their tooling enough to provide a custom webpack config by coding a Builder and using Architect to establish targets that execute the Builder. If you did though you ran the risk of breaking changes in the API which was due to become stable in Angular 8. @angular-devkit/architect was considered experimental, that is up until <a href="https://github.com/angular/angular-cli/commit/e41e10d313ad49e632ed1f9d6e7e563b3eb2fd09">commits like this one</a> landed in the @angular/cli repository on Github.</p>
+                  
+                  <h1>
+                    <a name="angulardevkitarchitect-is-stable" href="#angulardevkitarchitect-is-stable" class="anchor">
+                    </a>
+                    @angular-devkit/architect is stable!
+                  </h1>
+                  
+                  <p>This is such a game changer for one reason alone. @angular/cli is becoming extensible.</p>
+                  
+                  <p><a href="https://i.giphy.com/media/kVRBvsiOyBM8o/giphy.gif" class="article-body-image-wrapper"><img src="https://i.giphy.com/media/kVRBvsiOyBM8o/giphy.gif" alt="" loading="lazy"></a></p>
+                  
+                  <p>Builders allow us to extend the Angular CLI to do things we never thought were possible before!</p>
+                  
+                  <p>Here are a few examples of how you could extend the CLI with a Builder.</p>
+                  
+                  <ul>
+                  <li>Run unit tests with Jest instead of Karma</li>
+                  <li>Execute e2e tests with TestCafe instead of Selenium and Protractor</li>
+                  <li>Optimize production bundles with a tool other than Webpack</li>
+                  <li>Use a custom node server</li>
+                  <li>Provide a custom Webpack config like <a href="https://github.com/angular/angular-cli/tree/master/packages/angular_devkit/build_webpack">@angular-devkit/build-webpack</a>
+                  </li>
+                  </ul>
+                  
+                  <p>When using the Builder API we get all these wonderful features / behaviors out of the box!</p>
+                  
+                  <ul>
+                  <li>RxJS Observables</li>
+                  <li>Composable</li>
+                  <li>Testable</li>
+                  <li>Loggers</li>
+                  <li>Progress tracking</li>
+                  <li>Error reporters</li>
+                  <li>Schedulers</li>
+                  </ul>
+                  
+                  <p>In this tutorial we look at building Angular by coding a Builder that optimizes an application with Closure Compiler.</p>
+                  
+                  <h2>
+                    <a name="enter-closure-compiler" href="#enter-closure-compiler" class="anchor">
+                    </a>
+                    Enter Closure Compiler
+                  </h2>
+                  
+                  <p>@angular/cli is dependent on webpack and terser for bundling and optimizing JavaScript. These tools do an excellent job, but there is another that does even better.</p>
+                  
+                  <p><a href="https://developers.google.com/closure/compiler/">Closure Compiler</a> is a tool used at Google for optimizing JavaScript for production. From the official website:</p>
+                  
+                  <blockquote>
+                  <p>Closure Compiler is a tool for making JavaScript download and run faster. Instead of compiling from a source language to machine code, it compiles from JavaScript to better JavaScript. It parses your JavaScript, analyzes it, removes dead code and rewrites and minimizes what's left. It also checks syntax, variable references, and types, and warns about common JavaScript pitfalls.</p>
+                  </blockquote>
+                  
+                  <p>At ng-conf 2017 the Angular team announced the AOT compiler is compatible with Closure Compiler in Angular 4. The AOT compiler converts TypeScript type annotations to JSDoc style annotations Closure Compiler can interpret. You can unlock this feature with a compiler flag. Behind the scenes a tool called tsickle converts the annotations. This feature would enable wide adoption of Angular at Google where teams are mandated to optimize JavaScript with Closure Compiler.</p>
+                  
+                  <p><a href="https://i.giphy.com/media/3SBi8gMf8BqBG/giphy.gif" class="article-body-image-wrapper"><img src="https://i.giphy.com/media/3SBi8gMf8BqBG/giphy.gif" alt="" loading="lazy"></a></p>
+                  
+                  <p>The Angular community was rallying around webpack at ng-conf 2017, however I was naturally curious about Closure Compiler. At development conferences you might find me listening in on a talk, typing away on my laptop experimenting with something I just learned about. At ng-conf I coded a proof of concept where I could bundle Angular with Closure Compiler. The results were impressive.</p>
+                  
+                  <h2>
+                    <a name="every-bundle-i-threw-at-closure-compiler-optimized-better-than-webpack-and-uglify-and-terser" href="#every-bundle-i-threw-at-closure-compiler-optimized-better-than-webpack-and-uglify-and-terser" class="anchor">
+                    </a>
+                    Every bundle I threw at Closure Compiler optimized better than Webpack and Uglify (and Terser).
+                  </h2>
+                  
+                  <p><a href="https://i.giphy.com/media/l3q2DgSFjbAyseViM/giphy.gif" class="article-body-image-wrapper"><img src="https://i.giphy.com/media/l3q2DgSFjbAyseViM/giphy.gif" alt="" loading="lazy"></a></p>
+                  
+                  <p>Angular must be built ahead of time (AOT) and the ahead of time compiled code. Closure Compiler must be in ADVANCED_OPTIMIZATIONS mode to ensure the smallest bundle possible. It also doesn't hurt to use @angular-devkit/build-optimizer. When the new Ivy compiler is final (Angular 9) we will see even better optimizations, but for now we have the AOT compiler.</p>
+                  
+                  <p>The Angular community is quite fortunate that Angular is compatible with Closure Compiler, however adoption has been slow because Angular CLI only supported Webpack. Not many other libraries or frameworks can claim to be able to generate bundles fully optimized with Closure Compiler. <a href="https://github.com/facebook/react/issues/11092">The React team</a> gave up trying to support Closure Compiler in its most aggressive mode for optimizing JavaScript.</p>
+                  
+                  <p>You have to annotate JavaScript pretty heavily to reap the full rewards of ADVANCED_OPTIMIZATIONS, a mode in Closure Compiler that is very aggressive at achieving the highest compression possible. Angular itself is already annotated and libraries built to spec with the Angular Package Format are compatible as well. Thats because developers already code Angular with TypeScript and the AOT compiler will convert our types to annotations Closure Compiler can interpret. If you maintain a type safe application you will get a highly optimized bundle with Closure Compiler!</p>
+                  
+                  <p>Now we can extend Angular CLI to build with Closure Compiler with the Architect API so it should make adoption much easier. Let's figure out how to bundle an application with Closure Compiler in the CLI!</p>
+                  
+                  <h2>
+                    <a name="how-to-build-angular-with-architect-cli" href="#how-to-build-angular-with-architect-cli" class="anchor">
+                    </a>
+                    How to build Angular with Architect CLI
+                  </h2>
+                  
+                  <p>In next section, we look at the essential files needed to scaffold a Builder and the Architect targets necessary to bundle a simple Angular app with Closure Compiler. The concepts presented in this section could be extended for any Builder. At some point I wouldn't be surprised to see a schematic that makes scaffolding a Builder much easier, but for now we will create the files ourselves.</p>
+                  
+                  <h3>
+                    <a name="intro" href="#intro" class="anchor">
+                    </a>
+                    Intro
+                  </h3>
+                  
+                  <p>First let's outline the steps we can take to build Angular.</p>
+                  
+                  <div class="table-wrapper-paragraph"><table>
+                  <thead>
+                  <tr>
+                  <th>step</th>
+                  <th>description</th>
+                  <th>tool</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                  <td>compile</td>
+                  <td>compiles the app ahead of time</td>
+                  <td>@angular/compiler</td>
+                  </tr>
+                  <tr>
+                  <td>optimize</td>
+                  <td>remove unnecessary byproducts of compilation w/ (optional)</td>
+                  <td>@angular-devkit/build_optimizer</td>
+                  </tr>
+                  <tr>
+                  <td>handle env</td>
+                  <td>use the environments provided by cli (optional)</td>
+                  <td>cp</td>
+                  </tr>
+                  <tr>
+                  <td>bundle</td>
+                  <td>bundle and mangle the AOT compiled code</td>
+                  <td>google-closure-compiler</td>
+                  </tr>
+                  </tbody>
+                  </table></div>
+                  
+                  <p>To build an Angular app for production we need to use the @angular/compiler-cli. If we were to do this manually we would evoke the compiler using the <code>ngc</code> command.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight plaintext"><code>ngc -p src/tsconfig.app.json
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>This will output the AOT compiled application in the out-tsc directory, coincidentally where the cli puts it by default in a production build. That's because that is how the <code>outDir</code> is configured in src/tsconfig.app.json : <code>"outDir": "../out-tsc",</code></p>
+                  
+                  <p>We can optimize the application prior to bundling with @angular-devkit/build-optimizer. This package removes some code the compiler spit out that is not necessary, like the decorators we used in development.</p>
+                  
+                  <p>@angular/cli has this concept of environments where engineers can <code>import { environment } from './environment'</code>.  <code>environment</code> is an Object with configuration for each environment. To make a custom build friendly with @angular/cli we should support this API as well. Basically what needs to happen is the content of <code>environment.js</code> in the out-tsc directory needs to be swapped out with <code>environment.${env}.js</code> .</p>
+                  
+                  <p>To bundle with Closure Compiler we need a new configuration file: closure.conf. More on this later. Closure Compiler is a Java application distributed in google-closure-compiler-java package. Closure Compiler also provides a JavaScript API but in practice I've found the Java implementation to be more reliable.</p>
+                  
+                  <p><a href="https://i.giphy.com/media/l3q2K5jinAlChoCLS/giphy.gif" class="article-body-image-wrapper"><img src="https://i.giphy.com/media/l3q2K5jinAlChoCLS/giphy.gif" alt="" loading="lazy"></a></p>
+                  
+                  <p>To manually run the Closure Compiler application we can use arguments on the command line.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight plaintext"><code>java -jar ${jarPath} --flagFile ${confFile} --js_output_file ${outFile}
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>That's it! In this tutorial we will take care of the mandatory steps 1 and 4, running the AOT compiler and optimizing a single bundle with Closure Compiler.</p>
+                  
+                  <p>In Build Angular like an Architect (Part 2) we add environments and optimize the bundle even more with @angular-devkit/build-optimizer. If you want a sneak peak at how this is done, <a href="https://github.com/steveblue/architect/blob/master/build_tools/src/util.ts">check out the Github repository</a>.</p>
+                  
+                  <h3>
+                    <a name="getting-started" href="#getting-started" class="anchor">
+                    </a>
+                    Getting Started
+                  </h3>
+                  
+                  <p>Install the latest cli and architect packages globally using the <code>next</code>  version. The stable Architect CLI is only available in the latest releases.</p>
+                  
+                  <p>Architect development relies on node &gt; 10.14.1. Check which version of node you are running with <code>which node</code> and update node accordingly.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight shell"><code>npm i <span class="nt">-g</span> @angular/cli@next @angular-devkit/core@next @angular-devkit/architect@next @angular-devkit/architect-cli@next
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>Create a new application workspace with @angular/cli.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight plaintext"><code>ng new build_repo
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>We called the application build_repo.</p>
+                  
+                  <p>If you don't already have it installed, also download and install  <a href="https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">latest Java SDK from Oracle</a>. Now you can run the Closure Compiler Java application.</p>
+                  
+                  <p>Install Closure Compiler and tsickle in the project workspace.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight plaintext"><code>npm i google-closure-compiler tsickle --save-dev
+                  </code></pre></div>
+                  
+                  
+                  
+                  <h3>
+                    <a name="buildtools" href="#buildtools" class="anchor">
+                    </a>
+                    build_tools
+                  </h3>
+                  
+                  <p>Make a new directory called ‘build_tools’ in the root of your project.</p>
+                  
+                  <p>Let's review the files we should have in the root directory.</p>
+                  
+                  <div class="table-wrapper-paragraph"><table>
+                  <thead>
+                  <tr>
+                  <th>file</th>
+                  <th>description</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                  <td>build_tools</td>
+                  <td>workspace for coding Builders</td>
+                  </tr>
+                  <tr>
+                  <td>angular.json</td>
+                  <td>Angular app workspace configuration</td>
+                  </tr>
+                  </tbody>
+                  </table></div>
+                  
+                  <p>Create several new files in the build_tools directory. Below is a description of what each file does.</p>
+                  
+                  <div class="table-wrapper-paragraph"><table>
+                  <thead>
+                  <tr>
+                  <th>file</th>
+                  <th>description</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                  <td>package.json</td>
+                  <td>installs dependencies, provides context for Builder</td>
+                  </tr>
+                  <tr>
+                  <td>tsconfig.json</td>
+                  <td>typescript project configuration</td>
+                  </tr>
+                  <tr>
+                  <td>builders.json</td>
+                  <td>schema for the Builders available in this package</td>
+                  </tr>
+                  <tr>
+                  <td>src/closure/schema.json</td>
+                  <td>schema for a Closure Compiler Builder</td>
+                  </tr>
+                  <tr>
+                  <td>src/closure/index.ts</td>
+                  <td>root file for a Closure Compiler Builder</td>
+                  </tr>
+                  <tr>
+                  <td>src/index.ts</td>
+                  <td>root file for Builder package source</td>
+                  </tr>
+                  </tbody>
+                  </table></div>
+                  
+                  <p>Make a package.json in the build_tools directory. The file should look like the below example.</p>
+                  
+                  <h3>
+                    <a name="packagejson" href="#packagejson" class="anchor">
+                    </a>
+                    package.json
+                  </h3>
+                  
+                  
+                  
+                  <div class="highlight"><pre class="highlight json"><code><span class="p">{</span><span class="w">
+                    </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"build_tools"</span><span class="p">,</span><span class="w">
+                    </span><span class="nl">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.0.0"</span><span class="p">,</span><span class="w">
+                    </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+                    </span><span class="nl">"main"</span><span class="p">:</span><span class="w"> </span><span class="s2">"src/index.js"</span><span class="p">,</span><span class="w">
+                    </span><span class="nl">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                      </span><span class="nl">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"echo </span><span class="se">\"</span><span class="s2">Error: no test specified</span><span class="se">\"</span><span class="s2"> &amp;&amp; exit 1"</span><span class="w">
+                    </span><span class="p">},</span><span class="w">
+                    </span><span class="nl">"author"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+                    </span><span class="nl">"license"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MIT"</span><span class="p">,</span><span class="w">
+                    </span><span class="nl">"devDependencies"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                      </span><span class="nl">"@angular-devkit/architect"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^0.800.0-beta.10"</span><span class="p">,</span><span class="w">
+                      </span><span class="nl">"@angular-devkit/core"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^8.0.0-beta.10"</span><span class="p">,</span><span class="w">
+                      </span><span class="nl">"@types/node"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^11.12.1"</span><span class="w">
+                    </span><span class="p">},</span><span class="w">
+                    </span><span class="nl">"builders"</span><span class="p">:</span><span class="w"> </span><span class="s2">"builders.json"</span><span class="w">
+                  </span><span class="p">}</span><span class="w">
+                  
+                  </span></code></pre></div>
+                  
+                  
+                  
+                  <p>The package.json is necessary for @angular/cli to establish the location of builders.json and also to install the dependencies needed to develop the Builder.</p>
+                  
+                  <p>Run <code>npm install</code> in the build_tools directory.</p>
+                  
+                  <p>Make a new index.ts file in the src directory. Here export everything from src/closure/index.ts.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight typescript"><code><span class="k">export</span> <span class="o">*</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./closure</span><span class="dl">'</span><span class="p">;</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>In the build_tools directory make a new builder.json file.</p>
+                  
+                  <h3>
+                    <a name="buildersjson" href="#buildersjson" class="anchor">
+                    </a>
+                    builders.json
+                  </h3>
+                  
+                  <p>This file introduces schema for the Builders available in this package.</p>
+                  
+                  <p>builders.json establishes the target Architect needs to point to each Builder. In this example the target is called 'closure' and it points to the Builder at './src/closure/index.js' and the Builder's schema is located at './src/closure/schema.json'.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight json"><code><span class="p">{</span><span class="w">
+                    </span><span class="nl">"$schema"</span><span class="p">:</span><span class="w"> </span><span class="s2">"@angular-devkit/architect/src/builders-schema.json"</span><span class="p">,</span><span class="w">
+                    </span><span class="nl">"builders"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                      </span><span class="nl">"closure"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                        </span><span class="nl">"implementation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./src/closure/index"</span><span class="p">,</span><span class="w">
+                        </span><span class="nl">"class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./src/closure"</span><span class="p">,</span><span class="w">
+                        </span><span class="nl">"schema"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./src/closure/schema.json"</span><span class="p">,</span><span class="w">
+                        </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Build a Closure app."</span><span class="w">
+                      </span><span class="p">}</span><span class="w">
+                    </span><span class="p">}</span><span class="w">
+                  </span><span class="p">}</span><span class="w">
+                  </span></code></pre></div>
+                  
+                  
+                  
+                  <h3>
+                    <a name="srcclosureschemajson" href="#srcclosureschemajson" class="anchor">
+                    </a>
+                    src/closure/schema.json
+                  </h3>
+                  
+                  <p>While on the topic of schema, we might as well declare the schema for the Closure Compiler Builder. Builder schema establishes the outward facing API for the Builder.</p>
+                  
+                  <p>In ./src/closure/schema.json we define two required properties an engineer will need to provide in their workspace angular.json: <code>tsConfig</code> and <code>closureConfig</code>. These two properties map to the path of each configuration file: the tsconfig.json used to build Angular with the AOT compiler and the closure.conf used to bundle the application.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight json"><code><span class="p">{</span><span class="w">
+                    </span><span class="nl">"$schema"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://json-schema.org/schema"</span><span class="p">,</span><span class="w">
+                    </span><span class="nl">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Closure Compiler Builder."</span><span class="p">,</span><span class="w">
+                    </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Closure Compiler Builder schema for Architect."</span><span class="p">,</span><span class="w">
+                    </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"object"</span><span class="p">,</span><span class="w">
+                    </span><span class="nl">"properties"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                      </span><span class="nl">"tsConfig"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                        </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span><span class="w">
+                        </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The path to the Closure configuration file."</span><span class="w">
+                      </span><span class="p">},</span><span class="w">
+                      </span><span class="nl">"closureConfig"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                        </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"string"</span><span class="p">,</span><span class="w">
+                        </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The path to the Closure configuration file."</span><span class="w">
+                      </span><span class="p">},</span><span class="w">
+                    </span><span class="p">},</span><span class="w">
+                    </span><span class="nl">"additionalProperties"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+                    </span><span class="nl">"required"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                      </span><span class="s2">"tsConfig"</span><span class="p">,</span><span class="w">
+                      </span><span class="s2">"closureConfig"</span><span class="w">
+                    </span><span class="p">]</span><span class="w">
+                  </span><span class="p">}</span><span class="w">
+                  </span></code></pre></div>
+                  
+                  
+                  
+                  <h3>
+                    <a name="intro-to-builder-api" href="#intro-to-builder-api" class="anchor">
+                    </a>
+                    Intro to Builder API
+                  </h3>
+                  
+                  <p>src/closure/index.ts is where the Builder logic is located.</p>
+                  
+                  <p>Builders are coded with TypeScript. The API that we need to use is mainly provided by @angular-devkit/architect and node. The awesome part of coding Builders is that the syntax is very familiar for anyone who codes an Angular application. Builders make heavy use of the Observable pattern from rxjs.</p>
+                  
+                  <p>First, lets setup our imports.</p>
+                  
+                  <p><code>BuilderContext</code> will get passed to every step of the build process.</p>
+                  
+                  <p><code>BuilderOutput</code> is what finally returns from the Observable at the end of the process.</p>
+                  
+                  <p><code>createBuilder</code> is a method we call to create an instance of a Builder. Builders have an API that enable logging, progress trakcing and schemduling of builds.</p>
+                  
+                  <p>We are going to make use of <code>Observable</code>, <code>of</code>, <code>catchError</code>, <code>mapTo</code>, and <code>concatMap</code> from rxjs.</p>
+                  
+                  <p><code>exec</code>, <code>normalize</code> and <code>readFileSync</code> are imported from standard node packages (child_process, path, and fs respectively). These tools will allow us to execute commands like we entered them on the command line ('exec'), enables cross platform handling of file paths with methods like <code>normalize</code>, and <code>readFileSync</code> gives us the ability to read a file syncronously.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight javascript"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">BuilderContext</span><span class="p">,</span> <span class="nx">BuilderOutput</span><span class="p">,</span> <span class="nx">createBuilder</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@angular-devkit/architect/src/index2</span><span class="dl">'</span><span class="p">;</span>
+                  <span class="k">import</span> <span class="p">{</span> <span class="nx">Observable</span><span class="p">,</span> <span class="k">of</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">rxjs</span><span class="dl">'</span><span class="p">;</span>
+                  <span class="k">import</span> <span class="p">{</span> <span class="nx">catchError</span><span class="p">,</span> <span class="nx">mapTo</span><span class="p">,</span> <span class="nx">concatMap</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">rxjs/operators</span><span class="dl">'</span><span class="p">;</span>
+                  <span class="k">import</span> <span class="p">{</span> <span class="nx">exec</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">child_process</span><span class="dl">'</span><span class="p">;</span>
+                  <span class="k">import</span> <span class="p">{</span> <span class="nx">normalize</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">path</span><span class="dl">'</span><span class="p">;</span>
+                  <span class="k">import</span> <span class="p">{</span> <span class="nx">readFileSync</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">fs</span><span class="dl">'</span><span class="p">;</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>Next make a new file called schema.interface.ts in build_tools/src/closure and declare an interface for TypeScript that mirrors the json-schema we created earlier. There are ways to use the json-schema in lieu of a TypeScript interface, but for simplicity lets just declare the schema as an interface.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight typescript"><code><span class="k">export</span> <span class="kr">interface</span> <span class="nx">ClosureBuilderSchema</span> <span class="p">{</span>
+                    <span class="nl">tsConfig</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+                    <span class="nl">closureConfig</span><span class="p">:</span> <span class="kr">string</span><span class="p">;</span>
+                  <span class="p">}</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>Import the new schema.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight javascript"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">ClosureBuilderSchema</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./schema.interface</span><span class="dl">'</span><span class="p">;</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>Next declare an export for the Builder and also the callback function that executes the build.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight javascript"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">executeClosure</span><span class="p">(</span>
+                    <span class="nx">options</span><span class="p">:</span> <span class="nx">ClosureBuilderSchema</span><span class="p">,</span>
+                    <span class="nx">context</span><span class="p">:</span> <span class="nx">BuilderContext</span>
+                  <span class="p">):</span> <span class="nx">Observable</span><span class="o">&lt;</span><span class="nx">BuilderOutput</span><span class="o">&gt;</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="k">of</span><span class="p">(</span><span class="nx">context</span><span class="p">).</span><span class="nx">pipe</span><span class="p">(</span>
+                      <span class="nx">mapTo</span><span class="p">({</span> <span class="na">success</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}),</span>
+                      <span class="nx">catchError</span><span class="p">(</span><span class="nx">error</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                        <span class="nx">context</span><span class="p">.</span><span class="nx">reportStatus</span><span class="p">(</span><span class="dl">'</span><span class="s1">Error: </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">error</span><span class="p">);</span>
+                        <span class="k">return</span> <span class="p">[{</span> <span class="na">success</span><span class="p">:</span> <span class="kc">false</span> <span class="p">}];</span>
+                      <span class="p">}),</span>
+                    <span class="p">);</span>
+                  <span class="p">}</span>
+                  
+                  <span class="k">export</span> <span class="k">default</span> <span class="nx">createBuilder</span><span class="o">&lt;</span><span class="nx">Record</span><span class="o">&lt;</span><span class="nx">string</span><span class="p">,</span> <span class="nx">string</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="nx">ClosureBuilderSchema</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">executeClosure</span><span class="p">);</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p><code>executeClosure</code> takes two arguments: <code>options</code> and <code>context</code>.</p>
+                  
+                  <div class="table-wrapper-paragraph"><table>
+                  <thead>
+                  <tr>
+                  <th>argument</th>
+                  <th>description</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                  <td>options</td>
+                  <td>options passed in from angular.json</td>
+                  </tr>
+                  <tr>
+                  <td>context</td>
+                  <td>context of the current executing Builder</td>
+                  </tr>
+                  </tbody>
+                  </table></div>
+                  
+                  <p><code>executeClosure</code> returns a rxjs <code>Observable</code>.</p>
+                  
+                  <p>If the build is successful <code>mapTo</code> passes <code>{success: true}</code> to display feedback in the terminal.</p>
+                  
+                  <p>If any step in the build process throws an error <code>catchError</code> will be called.</p>
+                  
+                  <h3>
+                    <a name="compiling-the-project-source" href="#compiling-the-project-source" class="anchor">
+                    </a>
+                    Compiling the project source
+                  </h3>
+                  
+                  <p>In the build_tools directory add a tsconfig.json so we can compile the TypeScript we just coded.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight json"><code><span class="p">{</span><span class="w">
+                    </span><span class="nl">"compileOnSave"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+                    </span><span class="nl">"buildOnSave"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+                    </span><span class="nl">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                      </span><span class="nl">"baseUrl"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+                      </span><span class="nl">"rootDir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"."</span><span class="p">,</span><span class="w">
+                      </span><span class="nl">"target"</span><span class="p">:</span><span class="w"> </span><span class="s2">"es2018"</span><span class="p">,</span><span class="w">
+                      </span><span class="nl">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"commonjs"</span><span class="p">,</span><span class="w">
+                      </span><span class="nl">"moduleResolution"</span><span class="p">:</span><span class="w"> </span><span class="s2">"node"</span><span class="p">,</span><span class="w">
+                      </span><span class="nl">"noEmitOnError"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+                      </span><span class="nl">"noImplicitAny"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+                      </span><span class="nl">"removeComments"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+                      </span><span class="nl">"resolveJsonModule"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+                      </span><span class="nl">"esModuleInterop"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+                      </span><span class="nl">"skipLibCheck"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+                      </span><span class="nl">"strictNullChecks"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+                      </span><span class="nl">"declaration"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+                    </span><span class="p">},</span><span class="w">
+                    </span><span class="nl">"lib"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                      </span><span class="s2">"es2018"</span><span class="w">
+                    </span><span class="p">],</span><span class="w">
+                    </span><span class="nl">"typeRoots"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                      </span><span class="s2">"./node_modules/@types"</span><span class="w">
+                    </span><span class="p">],</span><span class="w">
+                    </span><span class="nl">"types"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                      </span><span class="s2">"node"</span><span class="p">,</span><span class="w">
+                      </span><span class="s2">"json-schema"</span><span class="w">
+                    </span><span class="p">],</span><span class="w">
+                    </span><span class="nl">"include"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                      </span><span class="s2">"./src/**/*.ts"</span><span class="w">
+                    </span><span class="p">],</span><span class="w">
+                    </span><span class="nl">"exclude"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                      </span><span class="s2">"./src/closure/schema.interface.ts"</span><span class="w">
+                    </span><span class="p">]</span><span class="w">
+                  </span><span class="p">}</span><span class="w">
+                  </span></code></pre></div>
+                  
+                  
+                  
+                  <p>In the build_tools directory use the <code>tsc</code> command to build the project.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight shell"><code>tsc <span class="nt">-p</span> tsconfig.json
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>Alternatively, you could also run the watcher to build on every file change.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight plaintext"><code>tsc -p tsconfig.json --watch
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>Now the project is built!</p>
+                  
+                  <p>For the sake of simplicity in this example the files are compiled in place, but we could fix this by setting the <code>outDir</code> parameter on the <code>compilerOptions</code>. We would need to also copy any schema.json and package.json over to a distribution folder as well.</p>
+                  
+                  <h3>
+                    <a name="configuring-angularjson" href="#configuring-angularjson" class="anchor">
+                    </a>
+                    Configuring angular.json
+                  </h3>
+                  
+                  <p>Back in the workspace of the project we scaffolded, configure the angular.json. We need to tell the project where to point  ClosureBuilder we just created.</p>
+                  
+                  <p>Create a new property in the 'architect' configuration called 'closure_build'.</p>
+                  
+                  <p>Set the new 'closure_build' object 'builder' property to './build_tools:closure'.</p>
+                  
+                  <p>'./build_tools' because thats where the package.json for our Architect project is located and 'closure' because we want to run the Builder named 'closure'. We configured the builders.json found at './build_tools' in an earlier step. If the './build_tools' directory is published and we install the package via npm we could replace './build_tools' here with the package name.</p>
+                  
+                  <p>Create another property on the 'closure' object and name it 'options'. In this object, configure the path to the closure configuration (we have yet to make) and the tsconfig for the angular project.</p>
+                  
+                  <p>angular.json should look like this when you are done.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight json"><code><span class="nl">"architect"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                    </span><span class="nl">"closure_build"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                      </span><span class="nl">"builder"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./build_tools:closure"</span><span class="p">,</span><span class="w">
+                      </span><span class="nl">"options"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                        </span><span class="nl">"closureConfig"</span><span class="p">:</span><span class="w"> </span><span class="s2">"closure.conf"</span><span class="p">,</span><span class="w">
+                        </span><span class="nl">"tsConfig"</span><span class="p">:</span><span class="w"> </span><span class="s2">"src/tsconfig.app.json"</span><span class="w">
+                      </span><span class="p">}</span><span class="w">
+                    </span><span class="p">}</span><span class="w">
+                  </span><span class="err">...</span><span class="w">
+                  
+                  </span></code></pre></div>
+                  
+                  
+                  
+                  <p>Using @angular-devkit/architect-cli package we installed globally earlier, test the Builder is working by passing the <code>architect</code> command the workspace name (build_repo) and the target we just established in angular.json (closure_build).<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight shell"><code>architect build_repo:closure_build
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>Architect should print SUCCESS in the terminal. You should see something like this.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight shell"><code>SUCCESS
+                  Result: <span class="o">{</span>
+                      <span class="s2">"success"</span>: <span class="nb">true</span>,
+                      <span class="s2">"target"</span>: <span class="o">{</span>
+                          <span class="s2">"project"</span>: <span class="s2">"build_repo"</span>,
+                          <span class="s2">"target"</span>: <span class="s2">"closure_build"</span>
+                      <span class="o">}</span>
+                  <span class="o">}</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <h3>
+                    <a name="what-is-going-on-here" href="#what-is-going-on-here" class="anchor">
+                    </a>
+                    What is going on here?
+                  </h3>
+                  
+                  <p>The Architect CLI allows us to test the Builder works correctly in a workspace. The <code>architect</code> command is equivalent to <code>ng run</code> in any typical @angular/cli workspace. The reason we see SUCCESS is because all the builder is doing is mapping an Observable we created to the success message in ./build_tools/src/closure/index.ts.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight typescript"><code><span class="k">return</span> <span class="k">of</span><span class="p">(</span><span class="nx">context</span><span class="p">).</span><span class="nx">pipe</span><span class="p">(</span>
+                    <span class="nx">mapTo</span><span class="p">({</span> <span class="na">success</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}),</span>
+                    <span class="nx">catchError</span><span class="p">(</span><span class="nx">error</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                      <span class="nx">context</span><span class="p">.</span><span class="nx">reportStatus</span><span class="p">(</span><span class="dl">'</span><span class="s1">Error: </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">error</span><span class="p">);</span>
+                      <span class="k">return</span> <span class="p">[{</span> <span class="na">success</span><span class="p">:</span> <span class="kc">false</span> <span class="p">}];</span>
+                    <span class="p">}),</span>
+                  <span class="p">);</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>We still need to code our build, but at least we know the scaffolding works!</p>
+                  
+                  <p>To continue testing the build run, in <code>build_tools</code> directory run <code>tsc -p tsconfig.json --watch</code>.<br>
+                  In the root of the project, run <code>architect build_repo:closure_build</code> after each incremental build of typescript.</p>
+                  <h2>
+                    <a name="coding-builders-with-rxjs-observables-and-nodejs" href="#coding-builders-with-rxjs-observables-and-nodejs" class="anchor">
+                    </a>
+                    Coding Builders with RxJS Observables and Node.js
+                  </h2>
+                  
+                  <p>Previously we established the ClosureBuilder will execute the build with the <code>executeClosure</code> method that returns an RxJS Observable. There is a problem we should consider with this approach. Observables are asynchronous, however builds often have a set of instructions that have to run synchronously. There are certainly use cases for asynchronously performing build tasks where Observables come in handy. We explore asynchronous use cases in later posts. For now we just need to execute a set of steps. To perform synchronous tasks with RxJS we employ the <code>concatMap</code> operator like in this example:<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight typescript"><code>  <span class="k">return</span> <span class="k">of</span><span class="p">(</span><span class="nx">context</span><span class="p">).</span><span class="nx">pipe</span><span class="p">(</span>
+                      <span class="nx">concatMap</span><span class="p">(</span> <span class="nx">results</span> <span class="o">=&gt;</span> <span class="nx">ngc</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">context</span><span class="p">)),</span>
+                      <span class="nx">concatMap</span><span class="p">(</span> <span class="nx">results</span> <span class="o">=&gt;</span> <span class="nx">compileMain</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">context</span><span class="p">)),</span>
+                      <span class="nx">concatMap</span><span class="p">(</span> <span class="nx">results</span> <span class="o">=&gt;</span> <span class="nx">closure</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="p">),</span>
+                      <span class="nx">mapTo</span><span class="p">({</span> <span class="na">success</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}),</span>
+                      <span class="nx">catchError</span><span class="p">(</span><span class="nx">error</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                        <span class="nx">context</span><span class="p">.</span><span class="nx">reportStatus</span><span class="p">(</span><span class="dl">'</span><span class="s1">Error: </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">error</span><span class="p">);</span>
+                        <span class="k">return</span> <span class="p">[{</span> <span class="na">success</span><span class="p">:</span> <span class="kc">false</span> <span class="p">}];</span>
+                      <span class="p">}),</span>
+                    <span class="p">);</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>In the above example the AOT compiler will execute, followed by a step for formatting the <code>main.js</code>, and finally a step that executes Closure Compiler to bundle and optimize the app.</p>
+                  
+                  <p>The @angular/cli team apparently has the opinion that coding a Builder should seem familiar to anyone who codes an Angular application. Fans of isomorphism are swooning for the API!</p>
+                  
+                  <p>We have a problem though because of this opinion, however it is an easy problem to solve.</p>
+                  
+                  <p>Problem:</p>
+                  
+                  <p>Node.js ❤️ Promises.</p>
+                  
+                  <p>Builders ❤️ RxJS Observables.</p>
+                  
+                  <p>Solution 1:</p>
+                  
+                  <p>RxJS Observables are interoperable with Promises.</p>
+                  
+                  <p><code>of(new Promise())</code> is a thing. RxJs will convert Promises to Observables behind the scenes for us.</p>
+                  
+                  <p>Solution 2:</p>
+                  
+                  <p>We can convert Promise based workflows to Observables.</p>
+                  
+                  <p>Consider this example we will use to evoke the AOT compiler with the Node.js <code>exec</code> method. The <code>ngc</code> method returns an <code>Observable</code>.</p>
+                  
+                  <p>In the <code>Observable</code> callback, we pass the observer. The program runs exec, performing the <code>ngc -p tsconfig.app.json</code> command as if we entered it in the terminal.</p>
+                  
+                  <p>If AOT compilation results in an Error, we call <code>observer.error()</code>.</p>
+                  
+                  <p>If AOT compilation succeeds, we call <code>observer.next()</code>.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight typescript"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">ngc</span><span class="p">(</span>
+                    <span class="nx">options</span><span class="p">:</span> <span class="nx">AbstractBuilderSchema</span> <span class="o">|</span> <span class="nx">RollupBuilderSchema</span> <span class="o">|</span> <span class="nx">ClosureBuilderSchema</span><span class="p">,</span>
+                    <span class="nx">context</span><span class="p">:</span> <span class="nx">BuilderContext</span>
+                  <span class="p">):</span> <span class="nx">Observable</span><span class="o">&lt;</span><span class="p">{}</span><span class="o">&gt;</span> <span class="p">{</span>
+                  
+                      <span class="k">return</span> <span class="k">new</span> <span class="nx">Observable</span><span class="p">((</span><span class="nx">observer</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                  
+                          <span class="nx">exec</span><span class="p">(</span><span class="nx">normalize</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">workspaceRoot</span> <span class="o">+</span><span class="dl">'</span><span class="s1">/node_modules/.bin/ngc</span><span class="dl">'</span><span class="p">)</span> <span class="o">+</span>
+                               <span class="dl">'</span><span class="s1"> -p </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">options</span><span class="p">.</span><span class="nx">tsConfig</span><span class="p">,</span>
+                               <span class="p">{},</span>
+                               <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">stdout</span><span class="p">,</span> <span class="nx">stderr</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                                <span class="k">if</span> <span class="p">(</span><span class="nx">stderr</span><span class="p">)</span> <span class="p">{</span>
+                                    <span class="nx">observer</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">stderr</span><span class="p">);</span>
+                                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                                    <span class="nx">observer</span><span class="p">.</span><span class="nx">next</span><span class="p">(</span><span class="nx">stdout</span><span class="p">);</span>
+                                <span class="p">}</span>
+                          <span class="p">});</span>
+                  
+                      <span class="p">});</span>
+                  
+                  <span class="p">}</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>When the above method gets inserted into the Observable map operator in <code>executeClosure</code>, the step will run!<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight typescript"><code>  <span class="k">return</span> <span class="k">of</span><span class="p">(</span><span class="nx">context</span><span class="p">).</span><span class="nx">pipe</span><span class="p">(</span>
+                      <span class="nx">concatMap</span><span class="p">(</span> <span class="nx">results</span> <span class="o">=&gt;</span> <span class="nx">ngc</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">context</span><span class="p">)),</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>Let's look at a few examples of build steps we execute to build an application with Closure Compiler.</p>
+                  
+                  <p>We outlined the build steps earlier at a conceptual level, but let's look at them again in more detail.</p>
+                  
+                  <h3>
+                    <a name="angular-compiler" href="#angular-compiler" class="anchor">
+                    </a>
+                    Angular Compiler
+                  </h3>
+                  
+                  <p>Angular is built ahead of time with the AOT compiler for production. AOT compilation results in smaller bundles, is more secure than JIT, and most important for our example, works with Closure Compiler! The AOT compiler translates TypeScript type annotations using a tool called tsickle.</p>
+                  
+                  <p>To configure the AOT compiler to output the annotations Closure Compiler needs to optimize in ADVANCED_OPTIMIZATIONS mode, we add two configuration options in the Angular workspace tsconfig.app.json.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight json"><code><span class="nl">"angularCompilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                      </span><span class="nl">"annotationsAs"</span><span class="p">:</span><span class="w"> </span><span class="s2">"static fields"</span><span class="p">,</span><span class="w">
+                      </span><span class="nl">"annotateForClosureCompiler"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+                  </span><span class="p">}</span><span class="w">
+                  </span></code></pre></div>
+                  
+                  
+                  
+                  <p>Back in build_tools/src/closure/index.ts, import <code>exec</code> so we can execute the AOT compiler and <code>normalize</code> so any paths we use are cross platform compatible, meaning users running the build on Windows can also use our script.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight javascript"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">exec</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">child_process</span><span class="dl">'</span><span class="p">;</span>
+                  <span class="k">import</span> <span class="p">{</span> <span class="nx">normalize</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">path</span><span class="dl">'</span><span class="p">;</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>Make a new function called ngc and give it two arguments: <code>options</code> and <code>context</code>. Every build step will take these two arguments in our example. <code>options</code> is the options the user passed in through angular.json, while <code>context</code> provides methods on the current <code>BuilderContext</code> we can use. We detail some of these methods in Part 2.</p>
+                  
+                  <p>For now we return an <code>Observable</code> that calls <code>exec</code>, passes in an absolute path to <code>ngc</code> in our workspace and then uses the <code>-p</code> argument to pass in a TypeScript configuration.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight typescript"><code>
+                  <span class="k">export</span> <span class="kd">function</span> <span class="nx">ngc</span><span class="p">(</span>
+                    <span class="nx">options</span><span class="p">:</span> <span class="nx">AbstractBuilderSchema</span> <span class="o">|</span> <span class="nx">RollupBuilderSchema</span> <span class="o">|</span> <span class="nx">ClosureBuilderSchema</span><span class="p">,</span>
+                    <span class="nx">context</span><span class="p">:</span> <span class="nx">BuilderContext</span>
+                  <span class="p">):</span> <span class="nx">Observable</span><span class="o">&lt;</span><span class="p">{}</span><span class="o">&gt;</span> <span class="p">{</span>
+                  
+                    <span class="k">return</span> <span class="k">new</span> <span class="nx">Observable</span><span class="p">((</span><span class="nx">observer</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                  
+                      <span class="nx">exec</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">normalize</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">workspaceRoot</span> <span class="o">+</span><span class="dl">'</span><span class="s1">/node_modules/.bin/ngc</span><span class="dl">'</span><span class="p">)}</span><span class="s2"> -p </span><span class="p">${</span><span class="nx">options</span><span class="p">.</span><span class="nx">tsConfig</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span>
+                            <span class="p">{},</span>
+                            <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">stdout</span><span class="p">,</span> <span class="nx">stderr</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                            <span class="k">if</span> <span class="p">(</span><span class="nx">stderr</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="nx">observer</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">stderr</span><span class="p">);</span>
+                            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                                <span class="nx">observer</span><span class="p">.</span><span class="nx">next</span><span class="p">(</span><span class="nx">stdout</span><span class="p">);</span>
+                            <span class="p">}</span>
+                      <span class="p">});</span>
+                  
+                    <span class="p">});</span>
+                  
+                  <span class="p">}</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>If we add this operation to the <code>executeClosure</code> function.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight typescript"><code>  <span class="k">return</span> <span class="k">of</span><span class="p">(</span><span class="nx">context</span><span class="p">).</span><span class="nx">pipe</span><span class="p">(</span>
+                      <span class="nx">concatMap</span><span class="p">(</span> <span class="nx">results</span> <span class="o">=&gt;</span> <span class="nx">ngc</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">context</span><span class="p">)),</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>Build the project.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight shell"><code>tsc <span class="nt">-p</span> tsconfig.json
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>In the Angular workspace we should be able to see a new directory called <code>out-tsc</code>  after we run the Architect CLI.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight shell"><code>architect build_repo:closure_build
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>This directory will be filled with AOT compiled code that has the file extension <code>ngfactory.js</code>. All of our application logic has been compiled into these files.</p>
+                  
+                  <p>If we look closely at the ahead of time compiled code, we will see a problem with the entry point of the Angular application in out-tsc/src/main.js.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight typescript"><code><span class="nx">platformBrowserDynamic</span><span class="p">().</span><span class="nx">bootstrapModule</span><span class="p">(</span><span class="nx">AppModule</span><span class="p">)</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>The entry point is still referencing the <code>AppModule</code> found in out-tsc/src/app/app.module.js. We need our app to bootstrap with the ahead of time compiled  <code>AppModuleNgFactory</code> found in out-tsc/src/app/app.module.ngfactory.js instead.</p>
+                  
+                  <p>@angular/cli takes care of this for us automatically when we run <code>ng serve</code> or <code>ng build</code>, Since we are coding a custom build, we need to transform the main.js ourselves.</p>
+                  
+                  <h3>
+                    <a name="format-mainjs" href="#format-mainjs" class="anchor">
+                    </a>
+                    Format main.js
+                  </h3>
+                  
+                  <p>We need a way to read the source <code>main.ts</code> from disk, find and replace portions of the file content, compile the TypeScript and then write the transformed file to disk.</p>
+                  
+                  <p>Luckily typescript is already a dependency of the project. We can just import it into build_tools/src/closure/index.ts.</p>
+                  
+                  <p>For all of the file management tasks we have some handy Node.js functions (<code>readFileSync</code>, <code>writeFile</code>, and <code>readFile</code>) found in fs.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight javascript"><code><span class="k">import</span> <span class="o">*</span> <span class="k">as</span> <span class="nx">ts</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">typescript</span><span class="dl">'</span><span class="p">;</span>
+                  <span class="k">import</span> <span class="p">{</span> <span class="nx">readFileSync</span><span class="p">,</span> <span class="nx">writeFile</span><span class="p">,</span> <span class="nx">readFile</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">fs</span><span class="dl">'</span><span class="p">;</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>This operation is a little bit more complex than the last example, but the format is the same. In the <code>compileMain</code> function we return an Observable again. The source main.ts is read from disk, the contents of the file are replaced, the content is then transpiled with the compilerOptions from the tsconfig we configured, and finally the file is written to disk in the out-tsc directory, replacing the file the AOT compiler originally output.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight typescript"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">compileMain</span><span class="p">(</span>
+                    <span class="nx">options</span><span class="p">:</span> <span class="nx">AbstractBuilderSchema</span> <span class="o">|</span> <span class="nx">RollupBuilderSchema</span> <span class="o">|</span> <span class="nx">ClosureBuilderSchema</span><span class="p">,</span>
+                    <span class="nx">context</span><span class="p">:</span> <span class="nx">BuilderContext</span>
+                  <span class="p">):</span> <span class="nx">Observable</span><span class="o">&lt;</span><span class="p">{}</span><span class="o">&gt;</span> <span class="p">{</span>
+                  
+                    <span class="k">return</span> <span class="k">new</span> <span class="nx">Observable</span><span class="p">((</span><span class="nx">observer</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                  
+                        <span class="kd">const</span> <span class="nx">inFile</span> <span class="o">=</span> <span class="nx">normalize</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">workspaceRoot</span><span class="o">+</span><span class="dl">'</span><span class="s1">/src/main.ts</span><span class="dl">'</span><span class="p">);</span>
+                        <span class="kd">const</span> <span class="nx">outFile</span> <span class="o">=</span> <span class="nx">normalize</span><span class="p">(</span><span class="dl">'</span><span class="s1">out-tsc/src/main.js</span><span class="dl">'</span><span class="p">);</span>
+                        <span class="kd">const</span> <span class="nx">tsConfig</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">join</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nx">workspaceRoot</span><span class="p">,</span> <span class="nx">options</span><span class="p">.</span><span class="nx">tsConfig</span><span class="p">),</span> <span class="dl">'</span><span class="s1">utf8</span><span class="dl">'</span><span class="p">));</span>
+                  
+                        <span class="nx">readFile</span><span class="p">(</span><span class="nx">inFile</span><span class="p">,</span> <span class="dl">'</span><span class="s1">utf8</span><span class="dl">'</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">contents</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                  
+                            <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="nx">observer</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+                  
+                            <span class="nx">contents</span> <span class="o">=</span> <span class="nx">contents</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/platformBrowserDynamic/g</span><span class="p">,</span> <span class="dl">'</span><span class="s1">platformBrowser</span><span class="dl">'</span><span class="p">);</span>
+                            <span class="nx">contents</span> <span class="o">=</span> <span class="nx">contents</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/platform-browser-dynamic/g</span><span class="p">,</span> <span class="dl">'</span><span class="s1">platform-browser</span><span class="dl">'</span><span class="p">);</span>
+                            <span class="nx">contents</span> <span class="o">=</span> <span class="nx">contents</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/bootstrapModule/g</span><span class="p">,</span> <span class="dl">'</span><span class="s1">bootstrapModuleFactory</span><span class="dl">'</span><span class="p">);</span>
+                            <span class="nx">contents</span> <span class="o">=</span> <span class="nx">contents</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/AppModule/g</span><span class="p">,</span> <span class="dl">'</span><span class="s1">AppModuleNgFactory</span><span class="dl">'</span><span class="p">);</span>
+                            <span class="nx">contents</span> <span class="o">=</span> <span class="nx">contents</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/.module/g</span><span class="p">,</span> <span class="dl">'</span><span class="s1">.module.ngfactory</span><span class="dl">'</span><span class="p">);</span>
+                  
+                            <span class="kd">const</span> <span class="nx">outputContent</span> <span class="o">=</span> <span class="nx">ts</span><span class="p">.</span><span class="nx">transpileModule</span><span class="p">(</span><span class="nx">contents</span><span class="p">,</span> <span class="p">{</span>
+                              <span class="na">compilerOptions</span><span class="p">:</span> <span class="nx">tsConfig</span><span class="p">.</span><span class="nx">compilerOptions</span><span class="p">,</span>
+                              <span class="na">moduleName</span><span class="p">:</span> <span class="dl">'</span><span class="s1">app</span><span class="dl">'</span>
+                            <span class="p">})</span>
+                  
+                            <span class="nx">writeFile</span><span class="p">(</span><span class="nx">outFile</span><span class="p">,</span> <span class="nx">outputContent</span><span class="p">.</span><span class="nx">outputText</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                                <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="nx">observer</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+                                <span class="nx">observer</span><span class="p">.</span><span class="nx">next</span><span class="p">(</span><span class="nx">outputContent</span><span class="p">.</span><span class="nx">outputText</span><span class="p">);</span>
+                            <span class="p">});</span>
+                  
+                        <span class="p">});</span>
+                  
+                    <span class="p">});</span>
+                  <span class="p">}</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>Add the <code>compileMain</code> method to the pipe.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight typescript"><code><span class="k">return</span> <span class="k">of</span><span class="p">(</span><span class="nx">context</span><span class="p">).</span><span class="nx">pipe</span><span class="p">(</span>
+                    <span class="nx">concatMap</span><span class="p">(</span> <span class="nx">results</span> <span class="o">=&gt;</span> <span class="nx">ngc</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="p">),</span>
+                    <span class="nx">concatMap</span><span class="p">(</span> <span class="nx">results</span> <span class="o">=&gt;</span> <span class="nx">compileMain</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="p">),</span>
+                  <span class="p">}</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>Build the project.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight shell"><code>tsc <span class="nt">-p</span> tsconfig.json
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>Run the Architect CLI.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight shell"><code>architect build_repo:closure_build
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>The file at out-tsc/src/main.js should call a <code>bootstrapModuleFactory</code> method on <code>platformBrowser</code> and pass in the <code>AppModuleNgFactory</code>.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight javascript"><code><span class="nx">platformBrowser</span><span class="p">().</span><span class="nx">bootstrapModuleFactory</span><span class="p">(</span><span class="nx">AppModuleNgFactory</span><span class="p">)</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>Now the entry point for our bundle is properly formatted for AOT compilation we can run Closure Compiler.</p>
+                  
+                  <h3>
+                    <a name="closure-compiler" href="#closure-compiler" class="anchor">
+                    </a>
+                    Closure Compiler
+                  </h3>
+                  
+                  <p>In order to build with Closure Compiler, we first need to write a configuration file called closure.conf in the root of the Angular workspace.</p>
+                  
+                  <h3>
+                    <a name="closureconf" href="#closureconf" class="anchor">
+                    </a>
+                    closure.conf
+                  </h3>
+                  
+                  <p>The closure.conf file configures Closure Compiler in the following ways:</p>
+                  
+                  <ul>
+                  <li>sets optional parameters for the build (--compilation_level, --create_source_map, etc)</li>
+                  <li>declares dependencies and external files (--js and --externs)</li>
+                  <li>location of the source files (AOT compiled app in the /out-tsc directory)</li>
+                  <li>entry point for the bundle (--entry_point)</li>
+                  <li>options for resolving node packages (--module_resolution, --package_json_entry_names)</li>
+                  </ul>
+                  
+                  <p>This particular closure.conf works with angular packages ~8.0.0-beta.10.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight shell"><code><span class="nt">--compilation_level</span><span class="o">=</span>ADVANCED_OPTIMIZATIONS
+                  <span class="nt">--language_out</span><span class="o">=</span>ECMASCRIPT5
+                  <span class="nt">--variable_renaming_report</span><span class="o">=</span>closure/variable_renaming_report
+                  <span class="nt">--property_renaming_report</span><span class="o">=</span>closure/property_renaming_report
+                  <span class="nt">--create_source_map</span><span class="o">=</span>%outname%.map
+                  
+                  <span class="nt">--warning_level</span><span class="o">=</span>QUIET
+                  <span class="nt">--dependency_mode</span><span class="o">=</span>STRICT
+                  <span class="nt">--rewrite_polyfills</span><span class="o">=</span><span class="nb">false</span>
+                  <span class="nt">--jscomp_off</span><span class="o">=</span>checkVars
+                  
+                  <span class="nt">--externs</span> node_modules/zone.js/dist/zone_externs.js
+                  
+                  <span class="nt">--js</span> node_modules/tslib/package.json
+                  <span class="nt">--js</span> node_modules/tslib/tslib.es6.js
+                  
+                  <span class="nt">--js</span> node_modules/rxjs/package.json
+                  <span class="nt">--js</span> node_modules/rxjs/_esm2015/index.js
+                  <span class="nt">--js</span> node_modules/rxjs/_esm2015/internal/<span class="k">**</span>.js
+                  <span class="nt">--js</span> node_modules/rxjs/operators/package.json
+                  <span class="nt">--js</span> node_modules/rxjs/_esm2015/operators/index.js
+                  
+                  <span class="nt">--js</span> node_modules/@angular/core/package.json
+                  <span class="nt">--js</span> node_modules/@angular/core/fesm2015/core.js
+                  
+                  <span class="nt">--js</span> node_modules/@angular/common/package.json
+                  <span class="nt">--js</span> node_modules/@angular/common/fesm2015/common.js
+                  
+                  <span class="nt">--js</span> node_modules/@angular/platform-browser/package.json
+                  <span class="nt">--js</span> node_modules/@angular/platform-browser/fesm2015/platform-browser.js
+                  
+                  <span class="nt">--js</span> node_modules/@angular/forms/package.json
+                  <span class="nt">--js</span> node_modules/@angular/forms/fesm2015/forms.js
+                  
+                  <span class="nt">--js</span> node_modules/@angular/common/http/package.json
+                  <span class="nt">--js</span> node_modules/@angular/common/fesm2015/http.js
+                  
+                  <span class="nt">--js</span> node_modules/@angular/router/package.json
+                  <span class="nt">--js</span> node_modules/@angular/router/fesm2015/router.js
+                  
+                  <span class="nt">--js</span> node_modules/@angular/animations/package.json
+                  <span class="nt">--js</span> node_modules/@angular/animations/fesm2015/animations.js
+                  
+                  <span class="nt">--js</span> node_modules/@angular/animations/browser/package.json
+                  <span class="nt">--js</span> node_modules/@angular/animations/fesm2015/browser.js
+                  
+                  <span class="nt">--js</span> node_modules/@angular/platform-browser/animations/package.json
+                  <span class="nt">--js</span> node_modules/@angular/platform-browser/fesm2015/animations.js
+                  
+                  <span class="nt">--js</span> out-tsc/<span class="k">**</span>.js
+                  
+                  <span class="nt">--module_resolution</span><span class="o">=</span>node
+                  <span class="nt">--package_json_entry_names</span> jsnext:main,es2015
+                  <span class="nt">--process_common_js_modules</span>
+                  
+                  <span class="nt">--entry_point</span><span class="o">=</span>./out-tsc/src/main.js
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>With the closure.conf in place, we can write a function in build_tools/src/closure/index.ts that executes the Java application in the google-closure-compiler-java package we installed earlier.</p>
+                  
+                  <p>In this example, we begin working with the <code>BuilderContext</code>. We reference the current <code>target</code> and <code>project</code> to configure where the final bundle is output based on the configuration in angular.json.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight typescript"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">closure</span><span class="p">(</span>
+                     <span class="nx">options</span><span class="p">:</span> <span class="nx">ClosureBuilderSchema</span><span class="p">,</span>
+                     <span class="nx">context</span><span class="p">:</span> <span class="nx">BuilderContext</span>
+                  <span class="p">):</span> <span class="nx">Observable</span><span class="o">&lt;</span><span class="p">{}</span><span class="o">&gt;</span> <span class="p">{</span>
+                  
+                    <span class="k">return</span> <span class="k">new</span> <span class="nx">Observable</span><span class="p">((</span><span class="nx">observer</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                  
+                      <span class="kd">const</span> <span class="nx">target</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">target</span> <span class="p">?</span> <span class="nx">context</span><span class="p">.</span><span class="nx">target</span> <span class="p">:</span> <span class="p">{</span> <span class="na">project</span><span class="p">:</span> <span class="dl">'</span><span class="s1">app</span><span class="dl">'</span> <span class="p">};</span>
+                      <span class="kd">const</span> <span class="nx">jarPath</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">jarPath</span> <span class="p">?</span> <span class="nx">options</span><span class="p">.</span><span class="nx">jarPath</span> <span class="p">:</span> <span class="nx">join</span><span class="p">(</span><span class="dl">'</span><span class="s1">node_modules</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">google-closure-compiler-java</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">compiler.jar</span><span class="dl">'</span><span class="p">);</span>
+                      <span class="kd">const</span> <span class="nx">confPath</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">closureConfig</span><span class="p">;</span>
+                      <span class="kd">const</span> <span class="nx">outFile</span> <span class="o">=</span> <span class="s2">`./dist/</span><span class="p">${</span><span class="nx">target</span><span class="p">.</span><span class="nx">project</span><span class="p">}</span><span class="s2">/main.js`</span><span class="p">;</span>
+                  
+                      <span class="nx">exec</span><span class="p">(</span><span class="s2">`java -jar </span><span class="p">${</span><span class="nx">jarPath</span><span class="p">}</span><span class="s2"> --flagfile </span><span class="p">${</span><span class="nx">confPath</span><span class="p">}</span><span class="s2"> --js_output_file </span><span class="p">${</span><span class="nx">outFile</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span>
+                          <span class="p">{},</span>
+                          <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">stdout</span><span class="p">,</span> <span class="nx">stderr</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                            <span class="k">if</span> <span class="p">(</span><span class="nx">stderr</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="dl">'</span><span class="s1">ERROR</span><span class="dl">'</span><span class="p">))</span> <span class="p">{</span>
+                              <span class="nx">observer</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+                            <span class="p">}</span>
+                            <span class="nx">observer</span><span class="p">.</span><span class="nx">next</span><span class="p">(</span><span class="nx">stdout</span><span class="p">);</span>
+                          <span class="p">});</span>
+                      <span class="p">})</span>
+                  <span class="p">}</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>Add the new <code>closure</code> function to the pipe in <code>executeClosure</code>.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight typescript"><code>
+                  <span class="k">return</span> <span class="k">of</span><span class="p">(</span><span class="nx">context</span><span class="p">).</span><span class="nx">pipe</span><span class="p">(</span>
+                    <span class="nx">concatMap</span><span class="p">(</span> <span class="nx">results</span> <span class="o">=&gt;</span> <span class="nx">ngc</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="p">),</span>
+                    <span class="nx">concatMap</span><span class="p">(</span> <span class="nx">results</span> <span class="o">=&gt;</span> <span class="nx">compileMain</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="p">),</span>
+                    <span class="nx">concatMap</span><span class="p">(</span> <span class="nx">results</span> <span class="o">=&gt;</span> <span class="nx">closure</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="p">)</span>
+                  <span class="p">}</span>
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>Build the project.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight shell"><code>tsc <span class="nt">-p</span> tsconfig.json
+                  </code></pre></div>
+                  
+                  
+                  
+                  <p>Run the Architect CLI.<br>
+                  </p>
+                  
+                  <div class="highlight"><pre class="highlight shell"><code>architect build_repo:closure_build
+                  </code></pre></div>
+                  
+                  
+                  
+                  <h1>
+                    <a name="great-scott" href="#great-scott" class="anchor">
+                    </a>
+                    GREAT SCOTT!
+                  </h1>
+                  
+                  <p><a href="https://i.giphy.com/media/3o7aCRBQC8u5GaW092/giphy.gif" class="article-body-image-wrapper"><img src="https://i.giphy.com/media/3o7aCRBQC8u5GaW092/giphy.gif" alt="" loading="lazy"></a></p>
+                  
+                  <h2>
+                    <a name="angularcli-is-optimizing-a-bundle-with-closure-compiler" href="#angularcli-is-optimizing-a-bundle-with-closure-compiler" class="anchor">
+                    </a>
+                    @angular/cli is optimizing a bundle with Closure Compiler!
+                  </h2>
+                  
+                  <p>Let's analyze the bundle that was created in a battle for the ages.</p>
+                  
+                  <h3>
+                    <a name="webpack-vs-closure-compiler" href="#webpack-vs-closure-compiler" class="anchor">
+                    </a>
+                    Webpack vs. Closure Compiler
+                  </h3>
+                  
+                  <p><a href="https://res.cloudinary.com/practicaldev/image/fetch/s--4LJZGvBt--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://thepracticaldev.s3.amazonaws.com/i/oc2vdqxqoxv76c0dhbxo.png" class="article-body-image-wrapper"><img src="https://res.cloudinary.com/practicaldev/image/fetch/s--4LJZGvBt--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://thepracticaldev.s3.amazonaws.com/i/oc2vdqxqoxv76c0dhbxo.png" alt="" loading="lazy"></a></p>
+                  
+                  <p>Webpack and Terser bundled and optimized the app ~43.3Kb(gzipped).</p>
+                  
+                  <p><a href="https://res.cloudinary.com/practicaldev/image/fetch/s--oV3rbSXt--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://thepracticaldev.s3.amazonaws.com/i/r00tdlcrbumb4lfvzcmo.png" class="article-body-image-wrapper"><img src="https://res.cloudinary.com/practicaldev/image/fetch/s--oV3rbSXt--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://thepracticaldev.s3.amazonaws.com/i/r00tdlcrbumb4lfvzcmo.png" alt="" loading="lazy"></a></p>
+                  
+                  <p>Closure Compiler bundled and optimized the app ~37.3Kb (gzipped).</p>
+                  
+                  <h1>
+                    <a name="14-reduction-in-bundle-size" href="#14-reduction-in-bundle-size" class="anchor">
+                    </a>
+                    ~14% reduction in bundle size
+                  </h1>
+                  
+                  <p>Thats a ~14% smaller bundle for this simple app! At scale that 14% can make a real tangible difference. These estimates include optimizations with @angular-devkit/build-optimizer and are served with gzip compression. I’ve seen other apps where Closure Compiler made the bundle ~20% smaller than the same app mangled with Uglify.</p>
+                  
+                  <p>There are other advantages to using Closure Compiler instead of Webpack. Closure provides warnings about potentially dangerous vulnerabilities. This helps keep web applications secure. Closure Compiler also optimizes JavaScript in interesting ways, transforming the actual code to make it run more performantly in the browser.</p>
+                  
+                  <h2>
+                    <a name="conclusion" href="#conclusion" class="anchor">
+                    </a>
+                    Conclusion
+                  </h2>
+                  
+                  <p>In Build Angular like an Architect (Part 1) we looked at how to code a Builder and execute the build with the Architect CLI. We extended @angular/cli to optimize a production bundle with Closure Compiler.</p>
+                  
+                  <p>The source code for <a href="https://github.com/steveblue/architect">Build Angular Like An Architect is available on Github</a>.</p>
+                  
+                  <p>In my humble opinion, @angular-devkit/architect is the single largest improvement to the Angular CLI since schematics were released. Angular CLI is becoming so extensible it may even be able to build any JavaScript project not just Angular. We can now extend the cli to perform any task we can imagine! That is an amazing feat for the Angular CLI team!</p>
+                  
+                  <p><a href="https://i.giphy.com/media/1ylQyCK1qZ63vn0lS0/giphy.gif" class="article-body-image-wrapper"><img src="https://i.giphy.com/media/1ylQyCK1qZ63vn0lS0/giphy.gif" alt="" loading="lazy"></a></p>
+                  
+                  <p>In <a href="https://dev.to/steveblue/build-angular-like-an-architect-part-2-208l">Build Angular like an Architect (Part 2)</a> we look at angular-devkit/build-optimizer, figure out how to implement environments.</p>
+                  
+                  <h2>
+                    <a name="what-do-you-think" href="#what-do-you-think" class="anchor">
+                    </a>
+                    What do you think?
+                  </h2>
+                  
+                  <p>What is your opinion of the new Architect CLI?</p>
+                  
+                  <p>What do you think about the @angular/cli becoming extensible?</p>
+                  
+                  
                 </div>
               </div>
             </div>
